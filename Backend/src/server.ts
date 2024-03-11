@@ -1,7 +1,7 @@
 import app from "./app.js";
 import connectDb from "./config/database.js";
 
-connectDb();
+ connectDb();
 
 app.get("/", (req, res)=>{
     res.end(`Welcome to the ProjectLoom backend.`)
