@@ -13,6 +13,6 @@ app.use(cors({ origin: 'http://localhost:5173' }));
 
 
 //using routes
-app.use("/api/v1/auth", userRoute);
+app.use("/api/v1/user", userRoute);
 
 export default app;
