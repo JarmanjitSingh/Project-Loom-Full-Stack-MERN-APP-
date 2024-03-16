@@ -1,8 +1,16 @@
 import express from "express";
-import { userRegister } from "../controllers/user.js";
+import {
+  LoginWithGoogle,
+  LoginWithPassword,
+  userRegister,
+} from "../controllers/user.js";
 
 const router = express.Router();
 
-router.route("/register").get(userRegister);
+router.route("/register").post(userRegister);
+
+router.route("/login/google").post(LoginWithGoogle);
+
+router.route("/login/password").post(LoginWithPassword);
 
 export default router;
