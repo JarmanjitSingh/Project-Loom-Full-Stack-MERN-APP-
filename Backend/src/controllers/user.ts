@@ -27,13 +27,16 @@ export const userRegister = catchAsyncErrors(
     if (isExist)
       return next(new ErrorHandler("This email already exists", 400));
 
-    const user = await User.create({
+    const userFields = {
       email,
       name,
       photoURL,
       googleUID,
       password,
-    });
+      emailVerification: !!googleUID, // If googleUID is present, set emailVerification to true
+    };
+
+    const user = await User.create(userFields);
 
     sendToken(res, user, "User created", 201);
   }
