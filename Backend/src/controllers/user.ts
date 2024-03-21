@@ -3,6 +3,7 @@ import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/error.js";
 import { User } from "../models/user.js";
 import {
+  AuthenticatedRequest,
   GoogleLoginRequestBody,
   NewUserRequestBody,
   PasswordLoginRequestBody,
@@ -87,5 +88,31 @@ export const LoginWithGoogle = catchAsyncErrors(
       return next(new ErrorHandler("Invalid Credentials", 400));
 
     sendToken(res, user, "Login successfully", 200);
+  }
+);
+
+export const getMyProfile = catchAsyncErrors(
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    res.status(200).json({
+      success: true,
+      user: req.user,
+    });
+  }
+);
+
+export const logoutUser = catchAsyncErrors(
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    res
+      .status(200)
+      .cookie("token", null, {
+        expires: new Date(Date.now()),
+        secure: true,
+        sameSite: "none",
+        httpOnly: true,
+      })
+      .json({
+        success: true,
+        message: "User logged out",
+      });
   }
 );

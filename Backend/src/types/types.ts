@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { UserType } from "../models/user.js";
 
 export type CatchAsyncErrorsType = (
   req: Request,
@@ -24,3 +25,7 @@ export type PasswordLoginRequestBody = {
   email: string;
   password: string;
 };
+
+export interface AuthenticatedRequest extends Request {
+  user?: any;
+}
