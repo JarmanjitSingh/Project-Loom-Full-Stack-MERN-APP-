@@ -1,6 +1,3 @@
-import { GoogleAuthProvider, signInWithPopup, signOut } from "firebase/auth";
-import { auth } from "../utils/firebase";
-import axios from "axios";
 import {
   Button,
   HStack,
@@ -12,53 +9,69 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import axios, { AxiosError } from "axios";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { FormEvent, useState } from "react";
 import { CiMail } from "react-icons/ci";
+import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { IoKeyOutline } from "react-icons/io5";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import Logo from "../assets/images/Logo.png";
 import rightSvg from "../assets/images/registerBanner.svg";
-import { useState } from "react";
-import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { IoKeyOutline } from "react-icons/io5";
+import {
+  EmailPasswordLoginApi,
+  LoginWithGoogleApi,
+} from "../reduxToolkit/api_functions/user";
+import { userExist } from "../reduxToolkit/slices/userSlice";
+import { auth } from "../utils/firebase";
 
 const LoginPage = () => {
   const [show, setShow] = useState<boolean>(false);
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+
+  const dispatch = useDispatch();
 
   const googleLoginClick = async () => {
+    setButtonLoading(true);
     try {
-      setButtonLoading(true)
       const provider = new GoogleAuthProvider();
       const { user } = await signInWithPopup(auth, provider);
-      setButtonLoading(false)
+      if (!user) return;
+      const formData = {
+        email: user.email as string,
+        googleUID: user.uid,
+      };
 
-      console.log("User: ", user);
-    } catch (error) {
-      setButtonLoading(false)
-
-      console.log(`Login Error`);
+      const data = await LoginWithGoogleApi(formData);
+      dispatch(userExist(data));
+    } catch (error: any) {
+      if (axios.isAxiosError(error)) {
+        // Handle Axios error
+        const axiosError = error as AxiosError;
+        console.error("Axios Error:", axiosError.message);
+        console.error("Axios Response Data:", axiosError.response?.data);
+      } else {
+        console.error("Non-Axios Error:", error);
+      }
+    } finally {
+      setButtonLoading(false);
     }
   };
 
-  const handleLogoutClick = async () => {
-    try {
-      await signOut(auth);
-      console.log(`user logged out`);
-    } catch (error) {
-      console.log("logout user error: ", error);
-    }
-  };
-
-  const serverRequest = async () => {
-    try {
-      const { data } = await axios.get(
-        `http://localhost:4000/api/v1/user/register`
-      );
-
-      console.log(data);
-    } catch (error) {
-      console.log("error", error);
-    }
+  const LoginThroughEmailPassword = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setButtonLoading(true);
+    const formData = {
+      email,
+      password,
+    };
+    const data = await EmailPasswordLoginApi(formData);
+    setButtonLoading(false);
+    dispatch(userExist(data));
   };
 
   return (
@@ -88,78 +101,101 @@ const LoginPage = () => {
           >
             <Heading mb={16}>Login</Heading>
 
-            <InputGroup mb={4}>
-              <InputLeftElement h={"full"} pointerEvents="none">
-                <CiMail
-                  style={{ cursor: "pointer", color: "gray" }}
-                  size={20}
-                />
-              </InputLeftElement>
-              <Input
-                size={"lg"}
-                variant={"filled"}
-                type="email"
-                placeholder="Email Address"
-                required
-              />
-            </InputGroup>
-
-            <InputGroup mb={4}>
-              <InputLeftElement h={"full"} pointerEvents="none">
-                <IoKeyOutline
-                  style={{ cursor: "pointer", color: "gray" }}
-                  size={20}
-                />
-              </InputLeftElement>
-              <Input
-                size={"lg"}
-                variant={"filled"}
-                type={show ? "text" : "password"}
-                placeholder="Password"
-                required
-              />
-
-              <InputRightElement h={"full"}>
-                {show ? (
-                  <FaRegEyeSlash
-                    onClick={() => setShow(!show)}
-                    style={{ cursor: "pointer", color: "gray" }}
-                    size={20}
-                  />
-                ) : (
-                  <FaRegEye
-                    onClick={() => setShow(!show)}
-                    style={{ cursor: "pointer", color: "gray" }}
-                    size={20}
-                  />
-                )}
-              </InputRightElement>
-            </InputGroup>
-
-            <Text
-              fontWeight={500}
-              textAlign={"center"}
-              p={"10px"}
-              fontSize={"sm"}
+            <form
+              style={{ width: "100%" }}
+              onSubmit={LoginThroughEmailPassword}
             >
-              By clicking 'Sign Up' you are agreeing to the <br />
-              Freedcamp{" "}
-              <Text display={"inline"} color={"blue.500"}>
-                Terms of Service
-              </Text>{" "}
-              and{" "}
-              <Text display={"inline"} color={"blue.500"}>
-                Privacy Policy
-              </Text>
-            </Text>
+              <InputGroup mb={4}>
+                <InputLeftElement h={"full"} pointerEvents="none">
+                  <CiMail
+                    style={{ cursor: "pointer", color: "gray" }}
+                    size={20}
+                  />
+                </InputLeftElement>
+                <Input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  size={"lg"}
+                  variant={"filled"}
+                  type="email"
+                  placeholder="Email Address"
+                  required
+                />
+              </InputGroup>
 
-            <Button size={"lg"} m={"10px 0"} colorScheme="blue" w={"full"}>
-              Continue with Email Address
-            </Button>
+              <InputGroup mb={4}>
+                <InputLeftElement h={"full"} pointerEvents="none">
+                  <IoKeyOutline
+                    style={{ cursor: "pointer", color: "gray" }}
+                    size={20}
+                  />
+                </InputLeftElement>
+                <Input
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  size={"lg"}
+                  variant={"filled"}
+                  type={show ? "text" : "password"}
+                  placeholder="Password"
+                  required
+                />
+
+                <InputRightElement h={"full"}>
+                  {show ? (
+                    <FaRegEyeSlash
+                      onClick={() => setShow(!show)}
+                      style={{ cursor: "pointer", color: "gray" }}
+                      size={20}
+                    />
+                  ) : (
+                    <FaRegEye
+                      onClick={() => setShow(!show)}
+                      style={{ cursor: "pointer", color: "gray" }}
+                      size={20}
+                    />
+                  )}
+                </InputRightElement>
+              </InputGroup>
+
+              <Text
+                fontWeight={500}
+                textAlign={"center"}
+                p={"10px"}
+                fontSize={"sm"}
+              >
+                By clicking 'Sign Up' you are agreeing to the <br />
+                Freedcamp{" "}
+                <Text display={"inline"} color={"blue.500"}>
+                  Terms of Service
+                </Text>{" "}
+                and{" "}
+                <Text display={"inline"} color={"blue.500"}>
+                  Privacy Policy
+                </Text>
+              </Text>
+
+              <Button
+                size={"lg"}
+                m={"10px 0"}
+                colorScheme="blue"
+                w={"full"}
+                type="submit"
+                isDisabled={buttonLoading}
+              >
+                Continue with Email Address
+              </Button>
+            </form>
 
             <Text color={"gray"}>or login with </Text>
 
-            <Button isLoading={buttonLoading} onClick={googleLoginClick} m={"10px 0"} variant={"outline"} size="lg" w={"100%"}>
+            <Button
+              isLoading={buttonLoading}
+              onClick={googleLoginClick}
+              m={"10px 0"}
+              variant={"outline"}
+              size="lg"
+              w={"100%"}
+            >
               <FcGoogle size={24} />{" "}
               <Text ml={4} color={"gray"}>
                 Sign in with Google

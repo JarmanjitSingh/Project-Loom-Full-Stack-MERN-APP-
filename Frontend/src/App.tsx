@@ -1,13 +1,11 @@
-import { onAuthStateChanged } from "firebase/auth";
+import axios from "axios";
 import { Suspense, lazy, useEffect } from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { auth } from "./utils/firebase";
-import Loader from "./components/Loader";
 import { useDispatch, useSelector } from "react-redux";
-import { RootState } from "./reduxToolkit/store";
-import axios, { AxiosError } from "axios";
-import { userExist, userNotExist } from "./reduxToolkit/slices/userSlice";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import Loader from "./components/Loader";
 import ProtectedRoute from "./components/ProtectedRoutes";
+import { userExist, userNotExist } from "./reduxToolkit/slices/userSlice";
+import { RootState } from "./reduxToolkit/store";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
 const RegisterPage = lazy(() => import("./pages/RegisterPage"));
@@ -20,7 +18,6 @@ const App = () => {
 
   const url = `${import.meta.env.VITE_SERVER}/user/me`;
 
-  
   useEffect(() => {
     async function fetchUserData() {
       try {
@@ -31,7 +28,7 @@ const App = () => {
         console.log("data", data);
         dispatch(userExist(data));
       } catch (error: any) {
-        console.log("error", error.response.data.message)
+        console.log("error", error?.response?.data?.message);
         dispatch(userNotExist());
       }
     }

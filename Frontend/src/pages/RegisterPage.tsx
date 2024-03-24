@@ -20,7 +20,7 @@ import { useState } from "react";
 const RegisterPage = () => {
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
 
-  const googleLoginClick1 = async () => {
+  const googleLoginClick = async () => {
     try {
       setButtonLoading(true);
       const provider = new GoogleAuthProvider();
@@ -99,7 +99,7 @@ const RegisterPage = () => {
 
           <Button
             isLoading={buttonLoading}
-            onClick={googleLoginClick1}
+            onClick={googleLoginClick}
             m={"10px 0"}
             variant={"outline"}
             size="lg"
