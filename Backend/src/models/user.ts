@@ -34,7 +34,7 @@ const schema = new mongoose.Schema<UserType>(
     },
     googleUID: {
       type: String,
-      unique: true,
+     // unique: true,
     },
     password: {
       type: String,

@@ -16,9 +16,9 @@ export const userRegister = catchAsyncErrors(
     res: Response,
     next: NextFunction
   ) => {
-    const { email, name, photoURL, googleUID, password } = req.body;
+    const { email, name, photoURL, googleUID } = req.body;
 
-    console.log("body", req.body);
+   // console.log("body", req.body);
 
     if (!email)
       return next(new ErrorHandler("Please enter your email address", 400));
@@ -33,9 +33,10 @@ export const userRegister = catchAsyncErrors(
       name,
       photoURL,
       googleUID,
-      password,
       emailVerification: !!googleUID, // If googleUID is present, set emailVerification to true
     };
+
+    console.log("user fields", userFields)
 
     const user = await User.create(userFields);
 
@@ -84,7 +85,7 @@ export const LoginWithGoogle = catchAsyncErrors(
 
     const user = await User.findOne({ email });
     if (!user) return next(new ErrorHandler("Account is not exist", 400));
-    if (!user?.googleUID || user?.googleUID === googleUID)
+    if (!user?.googleUID || user?.googleUID !== googleUID)
       return next(new ErrorHandler("Invalid Credentials", 400));
 
     sendToken(res, user, "Login successfully", 200);
