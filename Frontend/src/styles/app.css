@@ -10,7 +10,27 @@
   box-sizing: border-box;
 }
 
-a{
-    text-decoration: none;
+a {
+  text-decoration: none;
 }
 
+.iconDiv {
+  cursor: pointer;
+}
+.iconDiv:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.chooseProject {
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.chooseProject:hover {
+  border: 2px solid gray;
+}
+
+.chooseProject:hover svg {
+  color: white;
+}

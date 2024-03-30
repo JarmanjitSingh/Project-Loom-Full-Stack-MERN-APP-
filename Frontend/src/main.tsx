@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import { ChakraProvider } from "@chakra-ui/react";
 import { Provider } from "react-redux";
 import { store } from "./reduxToolkit/store.ts";
+import "./styles/app.css"
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
