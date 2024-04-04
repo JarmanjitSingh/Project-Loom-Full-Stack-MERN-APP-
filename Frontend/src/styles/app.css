@@ -34,3 +34,25 @@ a {
 .chooseProject:hover svg {
   color: white;
 }
+
+
+/* width */
+::-webkit-scrollbar {
+  width: 6px;
+  
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #bcbcbc;
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #9c9c9c;
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #7c7c7c;
+}
