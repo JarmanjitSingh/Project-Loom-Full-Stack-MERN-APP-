@@ -8,9 +8,11 @@ import { userExist, userNotExist } from "./reduxToolkit/slices/userSlice";
 import { RootState } from "./reduxToolkit/store";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
-const RegisterPage = lazy(() => import("./pages/RegisterPage"));
+const RegisterPage = lazy(() => import("./pages/register/RegisterPage"));
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
+const RegStep1 = lazy(() => import("./pages/register/RegStep1"));
+const RegStep2 = lazy(() => import("./pages/register/RegStep2"));
 
 const App = () => {
   const { loading, user } = useSelector((state: RootState) => state.user);
@@ -51,6 +53,28 @@ const App = () => {
                 redirect="/dashboard"
               >
                 <RegisterPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/register/account_settings1"
+            element={
+              <ProtectedRoute
+                isAuthenticated={user ? true : false}
+                redirect="/login"
+              >
+                <RegStep1 />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/register/account_settings2"
+            element={
+              <ProtectedRoute
+                isAuthenticated={user ? true : false}
+                redirect="/login"
+              >
+                <RegStep2 />
               </ProtectedRoute>
             }
           />

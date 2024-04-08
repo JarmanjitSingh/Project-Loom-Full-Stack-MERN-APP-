@@ -11,14 +11,14 @@ import {
 import { CiMail } from "react-icons/ci";
 import { FcGoogle } from "react-icons/fc";
 import { Link } from "react-router-dom";
-import Logo from "../assets/images/Logo.png";
-import rightSvg from "../assets/images/registerBanner.svg";
+import Logo from "../../assets/images/Logo.png";
+import rightSvg from "../../assets/images/registerBanner.svg";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../utils/firebase";
+import { auth } from "../../utils/firebase";
 import { FormEvent, useState } from "react";
-import { RegisterUserLoginApi } from "../reduxToolkit/api_functions/user";
+import { RegisterUserLoginApi } from "../../reduxToolkit/api_functions/user";
 import { useDispatch } from "react-redux";
-import { userExist } from "../reduxToolkit/slices/userSlice";
+import { userExist } from "../../reduxToolkit/slices/userSlice";
 import axios, { AxiosError } from "axios";
 
 const RegisterPage = () => {
