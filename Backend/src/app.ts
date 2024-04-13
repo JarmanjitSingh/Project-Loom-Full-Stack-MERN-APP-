@@ -1,20 +1,24 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
-import userRoute from "./routes/user.js";
+import { errorMiddleware } from "./middlewares/error.js";
 import groupRoute from "./routes/group.js";
 import projectRoute from "./routes/project.js";
-import { errorMiddleware } from "./middlewares/error.js";
-import cookieParser from "cookie-parser";
+import userRoute from "./routes/user.js";
+import path from "path";
 
 config();
 const app = express();
+
+
 
 //using middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(cookieParser());
+app.use("/uploads", express.static('uploads'));
 
 //using routes
 app.use("/api/v1/user", userRoute);

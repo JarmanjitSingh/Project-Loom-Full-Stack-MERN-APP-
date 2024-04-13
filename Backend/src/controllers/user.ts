@@ -18,7 +18,7 @@ export const userRegister = catchAsyncErrors(
   ) => {
     const { email, name, photoURL, googleUID } = req.body;
 
-   // console.log("body", req.body);
+    // console.log("body", req.body);
 
     if (!email)
       return next(new ErrorHandler("Please enter your email address", 400));
@@ -36,7 +36,7 @@ export const userRegister = catchAsyncErrors(
       emailVerification: !!googleUID, // If googleUID is present, set emailVerification to true
     };
 
-    console.log("user fields", userFields)
+    console.log("user fields", userFields);
 
     const user = await User.create(userFields);
 
@@ -115,5 +115,31 @@ export const logoutUser = catchAsyncErrors(
         success: true,
         message: "User logged out",
       });
+  }
+);
+
+export const updateMyAccount = catchAsyncErrors(
+  async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    const { name, password } = req.body;
+    const file = req.file;
+
+    if (!name || !password || !file)
+      return next(new ErrorHandler("Please fill all fields", 400));
+
+    const user = await User.findById(req.user._id);
+
+    if (!user) return next(new ErrorHandler("User not found", 400));
+
+    if (name) user.name = name;
+    if (password) user.password = password;
+    if (file) user.photoURL = file.path;
+
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      fileurl: `http://localhost:4000/${file.path}`,
+    });
   }
 );

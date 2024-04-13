@@ -60,7 +60,7 @@ const App = () => {
             path="/register/account_settings1"
             element={
               <ProtectedRoute
-                isAuthenticated={user ? true : false}
+                isAuthenticated={user ? false : true}
                 redirect="/login"
               >
                 <RegStep1 />
@@ -71,7 +71,7 @@ const App = () => {
             path="/register/account_settings2"
             element={
               <ProtectedRoute
-                isAuthenticated={user ? true : false}
+                isAuthenticated={user ? false : true}
                 redirect="/login"
               >
                 <RegStep2 />
