@@ -6,7 +6,7 @@ import { errorMiddleware } from "./middlewares/error.js";
 import groupRoute from "./routes/group.js";
 import projectRoute from "./routes/project.js";
 import userRoute from "./routes/user.js";
-import path from "path";
+import invitationRoute from "./routes/invitations.js";
 
 config();
 const app = express();
@@ -24,6 +24,7 @@ app.use("/uploads", express.static('uploads'));
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/group", groupRoute);
 app.use("/api/v1/project", projectRoute);
+app.use("/api/v1/invitation", invitationRoute);
 
 //using error middleware
 app.use(errorMiddleware);
