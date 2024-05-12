@@ -1,9 +1,10 @@
 import mongoose, { ObjectId } from "mongoose";
+import { UserType } from "./user.js";
 
 export interface GroupType extends Document {
   name: string;
   description?: string;
-  owner: ObjectId;
+  owner: ObjectId & UserType;
   members: ObjectId[];
   projects: ObjectId[];
 }

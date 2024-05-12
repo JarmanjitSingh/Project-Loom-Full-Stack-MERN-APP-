@@ -10,6 +10,7 @@ export type memberType = {
   email: string;
   status: "pending" | "accepted";
   role: "admin" | "proUser" | "User" | "guest" | "readonly";
+  _id: ObjectId
 };
 const schema = new mongoose.Schema<InvitationType>(
   {

@@ -29,3 +29,21 @@ export type PasswordLoginRequestBody = {
 export interface AuthenticatedRequest extends Request {
   user?: any;
 }
+
+export type EmailTypeFunction = (
+  to: string,
+  subject: string,
+  text: string,
+  link: string,
+  projectName: string,
+  senderEmail: string,
+  name?: string
+  
+) => void;
+
+export type HtmlTemplateType = (
+  link: string,
+  projectName: string,
+  senderEmail: string,
+  name?: string
+) => string;
