@@ -103,6 +103,6 @@ export const sendEmail: EmailTypeFunction = async (
     subject,
     text,
     html: htmlTemplate(link, projectName, senderEmail, name = ""),
-    from: "jarmanjits176@gmail.com",
+    from: '"via ProjectLoom 👻" <Jarmanjits176@gmail.com>',
   });
 };

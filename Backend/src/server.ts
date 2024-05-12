@@ -4,7 +4,7 @@ import { acceptInvitation } from "./controllers/invitations.js";
 
  connectDb();
 
- //acceptInvitation('663bc03c62dc63226e8e340b','663fba87786c4bb239e26c17')
+ //acceptInvitation('NjYzZmM0NmI1ODllYWQwNTQyMTdhM2I2LTY2NDExMmNmN2FiMzc3NWFkY2U1OTFhMS02NjAxYjVlMTdkODljYmZhYTlkZDNhNjM=')
 
 app.get("/", (req, res)=>{
     res.end(`Welcome to the ProjectLoom backend.`)

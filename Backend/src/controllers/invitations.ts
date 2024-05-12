@@ -3,8 +3,10 @@ import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/error.js";
 import { Group } from "../models/group.js";
 import { InvitationType, Invitations } from "../models/invitations.js";
+import { User } from "../models/user.js";
 import { AuthenticatedRequest } from "../types/types.js";
 import { sendEmail } from "../utils/sendEmail.js";
+import jwt from "jsonwebtoken";
 
 export const inviteUsers = catchAsyncErrors(
   async (
@@ -38,13 +40,37 @@ export const inviteUsers = catchAsyncErrors(
       });
     }
 
+    const memberEmails = members.map((data) => data.email);
+    const existingUsers = await User.find({ email: { $in: memberEmails } });
+
     invitation.members.forEach((data) => {
-      if (members.some(obj => obj.email === data.email)) {
+      if (members.some((obj) => obj.email === data.email)) {
+        const existingUser = existingUsers.find(
+          (user) => user.email === data.email
+        );
+
+        if (existingUser) {
+          const combinedIds = `${invitation._id}-${data._id}-${existingUser._id}`;
+          const token = Buffer.from(combinedIds).toString('base64');
+
+          sendEmail(
+            data.email,
+            `Project Loom group invitation`,
+            "You are invited to the group",
+            `${process.env.FRONTEND_URL}/invitation/accept/${token}`,
+            `${group.name}`,
+            `${group.owner.email}`
+          );
+        }
+      } else {
+        const combinedIds = `${invitation._id}-${data._id}`;
+        const token = Buffer.from(combinedIds).toString('base64');
+       
         sendEmail(
           data.email,
           `Project Loom group invitation`,
           "You are invited to the group",
-          `${process.env.FRONTEND_URL}/invitation/accept/${invitation._id}/${data._id}`,
+          `${process.env.FRONTEND_URL}/register/${token}`,
           `${group.name}`,
           `${group.owner.email}`
         );
@@ -59,13 +85,20 @@ export const inviteUsers = catchAsyncErrors(
 );
 
 export const acceptInvitation = async (
-  invitaionId: string,
-  memberId: string
+  token: string
 ) => {
-  const data = await Invitations.findOneAndUpdate(
-    { _id: invitaionId, "members._id": memberId },
+
+const decodedString = Buffer.from(token, 'base64').toString('utf-8');
+const [invitationId, memberId, userId] = decodedString.split('-');
+
+console.log(invitationId, memberId, userId)
+
+
+  const member = await Invitations.findOneAndUpdate(
+    { _id: invitationId, "members._id": memberId },
     { $set: { "members.$.status": "accepted" } },
     { new: true }
   );
-  console.log("updated document", data);
+
+  console.log("updated document", member);
 };
