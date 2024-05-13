@@ -6,7 +6,6 @@ import { InvitationType, Invitations } from "../models/invitations.js";
 import { User } from "../models/user.js";
 import { AuthenticatedRequest } from "../types/types.js";
 import { sendEmail } from "../utils/sendEmail.js";
-import jwt from "jsonwebtoken";
 
 export const inviteUsers = catchAsyncErrors(
   async (
@@ -51,7 +50,7 @@ export const inviteUsers = catchAsyncErrors(
 
         if (existingUser) {
           const combinedIds = `${invitation._id}-${data._id}-${existingUser._id}`;
-          const token = Buffer.from(combinedIds).toString('base64');
+          const token = Buffer.from(combinedIds).toString("base64");
 
           sendEmail(
             data.email,
@@ -64,8 +63,8 @@ export const inviteUsers = catchAsyncErrors(
         }
       } else {
         const combinedIds = `${invitation._id}-${data._id}`;
-        const token = Buffer.from(combinedIds).toString('base64');
-       
+        const token = Buffer.from(combinedIds).toString("base64");
+
         sendEmail(
           data.email,
           `Project Loom group invitation`,
@@ -84,21 +83,53 @@ export const inviteUsers = catchAsyncErrors(
   }
 );
 
-export const acceptInvitation = async (
-  token: string
-) => {
+export const acceptInvitation = catchAsyncErrors(
+  async (
+    req: AuthenticatedRequest & Request<{}, {}, {}>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { token } = req.params;
+    const decodedString = Buffer.from(token, "base64").toString("utf-8");
+    const [invitationId, memberId, userId] = decodedString.split("-");
 
-const decodedString = Buffer.from(token, 'base64').toString('utf-8');
-const [invitationId, memberId, userId] = decodedString.split('-');
+    console.log(invitationId, memberId, userId);
 
-console.log(invitationId, memberId, userId)
+    if (!invitationId || !memberId || !userId)
+      return next(new ErrorHandler("Invalid token", 400));
 
+    if (req.user._id.toString() !== userId)
+      return next(
+        new ErrorHandler(
+          "You are not able to join with this account. Please login with the invitee email",
+          400
+        )
+      );
 
-  const member = await Invitations.findOneAndUpdate(
-    { _id: invitationId, "members._id": memberId },
-    { $set: { "members.$.status": "accepted" } },
-    { new: true }
-  );
+    const member = await Invitations.findOneAndUpdate(
+      { _id: invitationId, "members._id": memberId },
+      { $set: { "members.$.status": "accepted" } },
+      { new: true }
+    );
 
-  console.log("updated document", member);
-};
+    if (!member) return next(new ErrorHandler("Invitation not found", 404));
+
+    const addMemberToGroup = await Group.findById(member?.group);
+
+    if (!addMemberToGroup)
+      return next(new ErrorHandler("Group not found", 404));
+
+    if (
+      addMemberToGroup.members.some((obj) => obj.member.toString() === userId)
+    )
+      return next(new ErrorHandler("Invitation already accepted", 400));
+
+    addMemberToGroup?.members.push({ member: userId });
+    await addMemberToGroup?.save();
+
+    res.status(201).json({
+      success: true,
+      message: "Invitation accepted",
+    });
+  }
+);

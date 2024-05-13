@@ -1,12 +1,18 @@
 import mongoose, { ObjectId } from "mongoose";
 import { UserType } from "./user.js";
+import { memberType } from "./invitations.js";
+import { ProjectType } from "./project.js";
 
 export interface GroupType extends Document {
   name: string;
   description?: string;
   owner: ObjectId & UserType;
-  members: ObjectId[];
-  projects: ObjectId[];
+  members: Array<{
+    member: ObjectId | string | memberType;
+  }>;
+  projects: Array<{
+    project: ObjectId | string | ProjectType;
+  }>;
 }
 
 const schema = new mongoose.Schema<GroupType>(
@@ -25,14 +31,18 @@ const schema = new mongoose.Schema<GroupType>(
     },
     members: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
+        member: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "User",
+        },
       },
     ],
     projects: [
       {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Project",
+        project: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "Project",
+        },
       },
     ],
   },
