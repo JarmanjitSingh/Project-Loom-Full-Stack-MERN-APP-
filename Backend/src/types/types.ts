@@ -1,5 +1,4 @@
 import { NextFunction, Request, Response } from "express";
-import { UserType } from "../models/user.js";
 
 export type CatchAsyncErrorsType = (
   req: Request,
@@ -14,6 +13,7 @@ export type NewUserRequestBody = {
   photoURL?: string;
   googleUID?: string;
   password?: string;
+  groupToken?: string;
 };
 
 export type GoogleLoginRequestBody = {
@@ -38,7 +38,6 @@ export type EmailTypeFunction = (
   projectName: string,
   senderEmail: string,
   name?: string
-  
 ) => void;
 
 export type HtmlTemplateType = (

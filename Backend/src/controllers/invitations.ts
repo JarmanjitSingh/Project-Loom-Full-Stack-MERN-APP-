@@ -133,3 +133,15 @@ export const acceptInvitation = catchAsyncErrors(
     });
   }
 );
+
+
+export const testing = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction)=>{
+
+const a = Buffer.from(`663fc46b589ead054217a3b6-66409140dab066b032f7c0e9`).toString("base64")
+console.log(a)
+
+  res.status(200).json({
+    success: true,
+    message: "Hakunamatata"
+  })
+})

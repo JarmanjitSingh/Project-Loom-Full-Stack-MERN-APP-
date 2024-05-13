@@ -9,6 +9,8 @@ import {
   PasswordLoginRequestBody,
 } from "../types/types.js";
 import { sendToken } from "../utils/sendToken.js";
+import { Invitations } from "../models/invitations.js";
+import { Group } from "../models/group.js";
 
 export const userRegister = catchAsyncErrors(
   async (
@@ -16,7 +18,7 @@ export const userRegister = catchAsyncErrors(
     res: Response,
     next: NextFunction
   ) => {
-    const { email, name, photoURL, googleUID } = req.body;
+    const { email, name, photoURL, googleUID, groupToken } = req.body;
 
     // console.log("body", req.body);
 
@@ -39,6 +41,32 @@ export const userRegister = catchAsyncErrors(
     console.log("user fields", userFields);
 
     const user = await User.create(userFields);
+
+    if (groupToken) {
+      const decodedString = Buffer.from(groupToken, "base64").toString("utf-8");
+      const [invitationId, memberId] = decodedString.split("-");
+
+      const member = await Invitations.findOneAndUpdate(
+        { _id: invitationId, "members._id": memberId },
+        { $set: { "members.$.status": "accepted" } },
+        { new: true }
+      );
+
+      if (!member)
+        return sendToken(
+          res,
+          user,
+          "Error while finding group invitation",
+          201
+        );
+      const addMemberToGroup = await Group.findById(member?.group);
+
+      if (!addMemberToGroup)
+        return sendToken(res, user, "Invitation group not found", 201);
+
+      addMemberToGroup?.members.push({ member: user._id });
+      await addMemberToGroup?.save();
+    }
 
     sendToken(res, user, "User created", 201);
   }
