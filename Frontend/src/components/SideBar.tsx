@@ -25,8 +25,17 @@ import { PiSquaresFourThin } from "react-icons/pi";
 import { RiDashboardLine } from "react-icons/ri";
 import { RxCalendar } from "react-icons/rx";
 import IconElement from "./IconElement";
+import { useSelector } from "react-redux";
+import { RootState } from "../reduxToolkit/store";
+import { useEffect } from "react";
 
 const SideBar = () => {
+  const { user } = useSelector((state: RootState) => state.user);
+
+  useEffect(() => {
+    console.log("hello", user?.name);
+  }, []);
+
   return (
     <VStack
       border={"2px solid red"}
@@ -182,7 +191,38 @@ const SideBar = () => {
                 />
               </AccordionButton>
             </h2>
-            <AccordionPanel pb={4}>Lorem ipsum dolor sit</AccordionPanel>
+            <AccordionPanel p={"10px 0px"}>
+              {user?.groups.map((group) => {
+                const GroupName = group.name;
+
+                return group.projects.map((project) => {
+                  return (
+                    <HStack
+                      className="projectListCard"
+                      borderRadius={"10px"}
+                      p={"5px 10px"}
+                      gap={4}
+                      cursor={"pointer"}
+                      mb={2}
+                      key={project.project._id}
+                    >
+                      <Box
+                        h={"17px"}
+                        borderRadius={"50%"}
+                        w={"17px"}
+                        background={"yellow"}
+                      ></Box>
+                      <VStack gap={0}>
+                        <Heading size={"sm"}>{project.project.name}</Heading>
+                        <Text fontSize={"xs"} color={"gray.300"} w={"100%"}>
+                          {GroupName}
+                        </Text>
+                      </VStack>
+                    </HStack>
+                  );
+                });
+              })}
+            </AccordionPanel>
           </AccordionItem>
         </Accordion>
       </VStack>
@@ -196,7 +236,11 @@ const SideBar = () => {
         padding={"5px 5px"}
         justifyContent={"space-between"}
       >
-        <Avatar name="Harman cheema" src="https://bit.ly/tioluwani-kolawole" />
+        <Avatar
+          name={user?.name}
+          cursor={"pointer"}
+          src={`http://localhost:4000/${user?.photoURL}`}
+        />
 
         <HStack h={"full"} color={"gray"}>
           <IconElement

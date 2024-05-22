@@ -122,9 +122,16 @@ export const LoginWithGoogle = catchAsyncErrors(
 
 export const getMyProfile = catchAsyncErrors(
   async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    const { _id } = req.user;
+
+    const userGroups = await Group.find({ owner: _id }).populate({
+      path: "projects.project",
+      model: "Project",
+    });
+
     res.status(200).json({
       success: true,
-      user: req.user,
+      user: {...req.user.toObject(), groups: userGroups },
     });
   }
 );

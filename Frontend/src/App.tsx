@@ -28,7 +28,7 @@ const App = () => {
         });
 
         console.log("data", data);
-        dispatch(userExist(data));
+        dispatch(userExist(data.user));
       } catch (error: any) {
         console.log("error", error?.response?.data?.message);
         dispatch(userNotExist());
