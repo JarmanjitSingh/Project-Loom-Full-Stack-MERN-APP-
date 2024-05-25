@@ -1,0 +1,49 @@
+import {
+  Button,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from "@chakra-ui/react";
+import { RefObject } from "react";
+
+type ProjectModalProps = {
+  referernce: RefObject<HTMLButtonElement>;
+};
+
+const ProjectModal = ({ referernce }: ProjectModalProps) => {
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  return (
+    <>
+      <Button onClick={onOpen} display={"none"} ref={referernce}></Button>
+      <Modal
+        onClose={onClose}
+        //finalFocusRef={referernce}
+        isOpen={isOpen}
+        scrollBehavior={"inside"}
+      >
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Add Project</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            What is the capacity to do work and the eligibility criteria is the
+            most important thing in the world so that the issue is this nothing
+            is permanent in this area of cross section and the eligibility
+            criteria
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+};
+
+export default ProjectModal;

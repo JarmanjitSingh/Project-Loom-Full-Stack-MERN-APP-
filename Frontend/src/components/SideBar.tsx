@@ -8,13 +8,25 @@ import {
   Box,
   HStack,
   Heading,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuList,
   Stack,
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { useEffect } from "react";
 import { BsClockHistory } from "react-icons/bs";
 import { CgReorder } from "react-icons/cg";
-import { CiBookmark, CiCirclePlus, CiSearch } from "react-icons/ci";
+import {
+  CiBookmark,
+  CiCirclePlus,
+  CiLogout,
+  CiSearch,
+  CiSettings,
+  CiUser,
+} from "react-icons/ci";
 import { FaTasks } from "react-icons/fa";
 import { GoHome, GoPlus } from "react-icons/go";
 import { IoIosArrowDown, IoMdNotificationsOutline } from "react-icons/io";
@@ -24,12 +36,16 @@ import { MdOutlineRemoveRedEye } from "react-icons/md";
 import { PiSquaresFourThin } from "react-icons/pi";
 import { RiDashboardLine } from "react-icons/ri";
 import { RxCalendar } from "react-icons/rx";
-import IconElement from "./IconElement";
+import { TfiHelpAlt } from "react-icons/tfi";
 import { useSelector } from "react-redux";
 import { RootState } from "../reduxToolkit/store";
-import { useEffect } from "react";
+import IconElement from "./IconElement";
 
-const SideBar = () => {
+type SideBarProps = {
+  logoutFunction: () => void;
+};
+
+const SideBar = ({ logoutFunction }: SideBarProps) => {
   const { user } = useSelector((state: RootState) => state.user);
 
   useEffect(() => {
@@ -134,9 +150,10 @@ const SideBar = () => {
 
       <VStack
         overflow={"auto"}
-        h={"50vh"}
+        h={"full"}
         w={"full"}
-        //  border={"2px solid blue"}
+        // border={"2px solid blue"}
+         justifyContent={'space-between'}
       >
         <Accordion defaultIndex={[0]} w={"full"} allowToggle>
           <AccordionItem
@@ -225,22 +242,35 @@ const SideBar = () => {
             </AccordionPanel>
           </AccordionItem>
         </Accordion>
-      </VStack>
 
-      <HStack
+
+
+        <HStack
         w={"full"}
         h={"60px"}
         borderTop={"1px solid gray"}
-        position={"absolute"}
+       //position={"absolute"}
         bottom={0}
         padding={"5px 5px"}
         justifyContent={"space-between"}
       >
-        <Avatar
-          name={user?.name}
-          cursor={"pointer"}
-          src={`http://localhost:4000/${user?.photoURL}`}
-        />
+        <Menu>
+          <MenuButton>
+            <Avatar
+              name={user?.name}
+              cursor={"pointer"}
+              src={`http://localhost:4000/${user?.photoURL}`}
+            />
+          </MenuButton>
+          <MenuList>
+            <MenuItem icon={<CiUser size={20} />}>My Account</MenuItem>
+            <MenuItem icon={<CiSettings size={20} />}>Manage System</MenuItem>
+            <MenuItem icon={<TfiHelpAlt size={20} />}>Get Support</MenuItem>
+            <MenuItem icon={<CiLogout size={20} />} onClick={logoutFunction}>
+              Logout
+            </MenuItem>
+          </MenuList>
+        </Menu>
 
         <HStack h={"full"} color={"gray"}>
           <IconElement
@@ -284,6 +314,9 @@ const SideBar = () => {
           />
         </HStack>
       </HStack>
+      </VStack>
+
+     
     </VStack>
   );
 };
