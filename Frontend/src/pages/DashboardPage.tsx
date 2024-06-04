@@ -26,10 +26,17 @@ const DashboardPage = () => {
 
   return (
     <>
-      <HStack border={"1px solid green"} w={"100vw"} h={"100vh"} gap={0}>
+      <HStack
+       //border={"1px solid green"}
+        w={"100vw"} h={"100vh"} gap={0}>
         <SideBar logoutFunction={handleLogoutClick} />
 
-        <VStack h={"full"} w={"100%"} gap={0} border={"2px solid blue"}>
+        <VStack
+          h={"full"}
+          w={"100%"}
+          gap={0}
+          //border={"2px solid blue"}
+        >
           {/* <Button colorScheme="red" onClick={handleLogoutClick}>
           Logout
         </Button> */}

@@ -54,7 +54,7 @@ const SideBar = ({ logoutFunction }: SideBarProps) => {
 
   return (
     <VStack
-      border={"2px solid red"}
+      //border={"2px solid red"}
       h={"full"}
       w={"22rem"}
       p={0}

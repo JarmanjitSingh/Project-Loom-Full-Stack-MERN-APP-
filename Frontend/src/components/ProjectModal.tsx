@@ -26,6 +26,7 @@ const ProjectModal = ({ referernce }: ProjectModalProps) => {
         //finalFocusRef={referernce}
         isOpen={isOpen}
         scrollBehavior={"inside"}
+        size={'3xl'}
       >
         <ModalOverlay />
         <ModalContent>

@@ -26,6 +26,7 @@ const GroupModal = ({ referernce }: GroupModalProps) => {
         //finalFocusRef={referernce}
         isOpen={isOpen}
         scrollBehavior={"inside"}
+        size={'3xl'}
       >
         <ModalOverlay />
         <ModalContent>
