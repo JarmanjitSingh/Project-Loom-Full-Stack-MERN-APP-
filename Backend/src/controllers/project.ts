@@ -11,6 +11,7 @@ export const createProject = catchAsyncErrors(
     res: Response,
     next: NextFunction
   ) => {
+    console.log("helloooo")
     const { name, description, color, group } = req.body;
 
     if (!name || !group || !req.user._id)

@@ -1,4 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
+import { UserSliceStateType } from "../../types/SliceTypes";
 
 const initialState: UserSliceStateType = {
   loading: true,

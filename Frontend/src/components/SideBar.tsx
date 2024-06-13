@@ -149,7 +149,7 @@ const SideBar = ({ logoutFunction }: SideBarProps) => {
       </Stack>
 
       <VStack
-        overflow={"auto"}
+      //    overflow={"auto"}
         h={"full"}
         w={"full"}
         // border={"2px solid blue"}
@@ -208,8 +208,8 @@ const SideBar = ({ logoutFunction }: SideBarProps) => {
                 />
               </AccordionButton>
             </h2>
-            <AccordionPanel p={"10px 0px"}>
-              {user?.groups.map((group) => {
+            <AccordionPanel p={"10px 0px"} overflow={'auto'} h={'60vh'}>
+              {user?.groups?.map((group) => {
                 const GroupName = group.name;
 
                 return group.projects.map((project) => {
@@ -227,7 +227,7 @@ const SideBar = ({ logoutFunction }: SideBarProps) => {
                         h={"17px"}
                         borderRadius={"50%"}
                         w={"17px"}
-                        background={"yellow"}
+                        background={project.project.color}
                       ></Box>
                       <VStack gap={0}>
                         <Heading size={"sm"}>{project.project.name}</Heading>

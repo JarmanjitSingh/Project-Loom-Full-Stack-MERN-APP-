@@ -60,3 +60,26 @@ a {
 ::-webkit-scrollbar-thumb:hover {
   background: #7c7c7c;
 }
+
+
+
+/* color picker */
+
+#colorPicker {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-color: transparent;
+  width: 60px;
+  height: 32px;
+  border: none;
+  cursor: pointer;
+}
+#colorPicker::-webkit-color-swatch {
+  border-radius: 50%;
+  border: none;
+}
+#colorPicker::-moz-color-swatch {
+  border-radius: 50%;
+  border: none;
+}

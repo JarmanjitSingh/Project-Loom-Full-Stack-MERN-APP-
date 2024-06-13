@@ -8,18 +8,18 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import { FormEvent, useState } from "react";
 import { CiMail } from "react-icons/ci";
 import { FcGoogle } from "react-icons/fc";
+import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import Logo from "../../assets/images/Logo.png";
 import rightSvg from "../../assets/images/registerBanner.svg";
-import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "../../utils/firebase";
-import { FormEvent, useState } from "react";
 import { RegisterUserLoginApi } from "../../reduxToolkit/api_functions/user";
-import { useDispatch } from "react-redux";
 import { userExist } from "../../reduxToolkit/slices/userSlice";
-import axios, { AxiosError } from "axios";
+import { auth } from "../../utils/firebase";
+import { catchErrorFunction } from "../../utils/utils";
 
 const RegisterPage = () => {
   const [buttonLoading, setButtonLoading] = useState<boolean>(false);
@@ -44,15 +44,8 @@ const RegisterPage = () => {
 
       const data = await RegisterUserLoginApi(formData);
       dispatch(userExist(data));
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        // Handle Axios error
-        const axiosError = error as AxiosError;
-        console.error("Axios Error:", axiosError.message);
-        console.error("Axios Response Data:", axiosError.response?.data);
-      } else {
-        console.error("Non-Axios Error:", error);
-      }
+    } catch (error) {
+      catchErrorFunction(error);
     } finally {
       setButtonLoading(false);
     }

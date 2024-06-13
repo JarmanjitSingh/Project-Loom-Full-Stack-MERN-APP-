@@ -1,24 +1,17 @@
-import axios, { AxiosError } from "axios";
+import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
+import axios from "axios";
+import {
+  LoginWithEmailPasswordType,
+  LoginWithGoogleType,
+  NewGroupType,
+  NewProjectDataType,
+  NewUserRequestBody,
+} from "../../types/RequestBodyTypes";
+import { catchErrorFunction } from "../../utils/utils";
+import { userExist } from "../slices/userSlice";
+import { ToastId, UseToastOptions } from "@chakra-ui/react";
 
 const server = import.meta.env.VITE_SERVER;
-
-type LoginWithGoogleType = {
-  email: string;
-  googleUID: string;
-};
-
-type LoginWithEmailPasswordType = {
-  email: string;
-  password: string;
-};
-
-type NewUserRequestBody = {
-  name?: string;
-  email: string;
-  photoURL?: string;
-  googleUID?: string;
-  password?: string;
-};
 
 export const LoginWithGoogleApi = async (formData: LoginWithGoogleType) => {
   try {
@@ -30,21 +23,13 @@ export const LoginWithGoogleApi = async (formData: LoginWithGoogleType) => {
     });
 
     return data;
-  } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      // Handle Axios error
-      const axiosError = error as AxiosError;
-      console.error("Axios Error:", axiosError.message);
-      console.error("Axios Response Data:", axiosError.response?.data);
-    } else {
-      console.error("Non-Axios Error:", error);
-    }
-    console.log("loginWithGoogleError", error?.response?.data?.message);
+  } catch (error) {
+    catchErrorFunction(error);
   }
 };
 
 export const EmailPasswordLoginApi = async (
-  formData: LoginWithEmailPasswordType
+  formData: LoginWithEmailPasswordType, toast: (options?: UseToastOptions | undefined) => ToastId
 ) => {
   try {
     const { data } = await axios.post(
@@ -59,15 +44,8 @@ export const EmailPasswordLoginApi = async (
     );
 
     return data;
-  } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      // Handle Axios error
-      const axiosError = error as AxiosError;
-      console.error("Axios Error:", axiosError.message);
-      console.error("Axios Response Data:", axiosError.response?.data);
-    } else {
-      console.error("Non-Axios Error:", error);
-    }
+  } catch (error) {
+    catchErrorFunction(error, undefined, toast );
   }
 };
 
@@ -78,14 +56,8 @@ export const LogoutUser = async () => {
     });
 
     return data;
-  } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      const axiosError = error as AxiosError;
-      console.error("Axios Error:", axiosError.message);
-      console.error("Axios Response Data:", axiosError.response?.data);
-    } else {
-      console.error("Non-Axios Error:", error);
-    }
+  } catch (error) {
+    catchErrorFunction(error);
   }
 };
 
@@ -99,14 +71,56 @@ export const RegisterUserLoginApi = async (formData: NewUserRequestBody) => {
     });
 
     return data;
-  } catch (error: any) {
-    if (axios.isAxiosError(error)) {
-      // Handle Axios error
-      const axiosError = error as AxiosError;
-      console.error("Axios Error:", axiosError.message);
-      console.error("Axios Response Data:", axiosError.response?.data);
-    } else {
-      console.error("Non-Axios Error:", error);
-    }
+  } catch (error) {
+    catchErrorFunction(error);
+  }
+};
+
+export const addNewGroup = async (
+  formData: NewGroupType,
+  dispatch: Dispatch<UnknownAction>
+) => {
+  try {
+    const { data } = await axios.post(`${server}/group/create`, formData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    GetMyProfile(dispatch);
+    return data;
+  } catch (error) {
+    catchErrorFunction(error);
+  }
+};
+
+export const GetMyProfile = async (dispatch: Dispatch<UnknownAction>) => {
+  try {
+    const { data } = await axios.get(`${server}/user/me`, {
+      withCredentials: true,
+    });
+
+    console.log("data", data);
+    dispatch(userExist(data.user));
+  } catch (error) {
+    catchErrorFunction(error, dispatch);
+  }
+};
+
+export const CreateNewProject = async (
+  formData: NewProjectDataType,
+  dispatch: Dispatch<UnknownAction>
+) => {
+  try {
+    const { data } = await axios.post(`${server}/project/create`, formData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    GetMyProfile(dispatch);
+    return data;
+  } catch (error) {
+    catchErrorFunction(error);
   }
 };

@@ -8,8 +8,8 @@ import {
   InputRightElement,
   Text,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
-import axios, { AxiosError } from "axios";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { FormEvent, useState } from "react";
 import { CiMail } from "react-icons/ci";
@@ -22,10 +22,12 @@ import Logo from "../assets/images/Logo.png";
 import rightSvg from "../assets/images/registerBanner.svg";
 import {
   EmailPasswordLoginApi,
+  GetMyProfile,
   LoginWithGoogleApi,
 } from "../reduxToolkit/api_functions/user";
 import { userExist } from "../reduxToolkit/slices/userSlice";
 import { auth } from "../utils/firebase";
+import { catchErrorFunction } from "../utils/utils";
 
 const LoginPage = () => {
   const [show, setShow] = useState<boolean>(false);
@@ -34,6 +36,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState<string>("");
 
   const dispatch = useDispatch();
+  const toast = useToast();
 
   const googleLoginClick = async () => {
     setButtonLoading(true);
@@ -47,16 +50,12 @@ const LoginPage = () => {
       };
 
       const data = await LoginWithGoogleApi(formData);
-      dispatch(userExist(data));
-    } catch (error: any) {
-      if (axios.isAxiosError(error)) {
-        // Handle Axios error
-        const axiosError = error as AxiosError;
-        console.error("Axios Error:", axiosError.message);
-        console.error("Axios Response Data:", axiosError.response?.data);
-      } else {
-        console.error("Non-Axios Error:", error);
+
+      if(data.success){
+        GetMyProfile(dispatch)
       }
+    } catch (error) {
+      catchErrorFunction(error);
     } finally {
       setButtonLoading(false);
     }
@@ -69,7 +68,8 @@ const LoginPage = () => {
       email,
       password,
     };
-    const data = await EmailPasswordLoginApi(formData);
+    const data = await EmailPasswordLoginApi(formData, toast);
+    console.log('datafromemailpassword',data)
     setButtonLoading(false);
     dispatch(userExist(data));
   };

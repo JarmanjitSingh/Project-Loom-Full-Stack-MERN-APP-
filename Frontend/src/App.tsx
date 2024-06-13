@@ -1,10 +1,9 @@
-import axios from "axios";
 import { Suspense, lazy, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import Loader from "./components/Loader";
 import ProtectedRoute from "./components/ProtectedRoutes";
-import { userExist, userNotExist } from "./reduxToolkit/slices/userSlice";
+import { GetMyProfile } from "./reduxToolkit/api_functions/user";
 import { RootState } from "./reduxToolkit/store";
 
 const HomePage = lazy(() => import("./pages/HomePage"));
@@ -18,25 +17,10 @@ const App = () => {
   const { loading, user } = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
 
-  const url = `${import.meta.env.VITE_SERVER}/user/me`;
-
   useEffect(() => {
-    async function fetchUserData() {
-      try {
-        const { data } = await axios.get(url, {
-          withCredentials: true,
-        });
-
-        console.log("data", data);
-        dispatch(userExist(data.user));
-      } catch (error: any) {
-        console.log("error", error?.response?.data?.message);
-        dispatch(userNotExist());
-      }
-    }
-
-    fetchUserData();
-  }, []);
+    GetMyProfile(dispatch);
+    console.log('App Rendered')
+  }, [dispatch]);
 
   return loading ? (
     <Loader />
