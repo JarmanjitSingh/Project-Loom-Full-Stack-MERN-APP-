@@ -4,6 +4,7 @@ import { AuthenticatedRequest } from "../types/types.js";
 import { Project, ProjectType } from "../models/project.js";
 import ErrorHandler from "../middlewares/error.js";
 import { Group } from "../models/group.js";
+import { Tasklist } from "../models/taskList.js";
 
 export const createProject = catchAsyncErrors(
   async (
@@ -11,7 +12,7 @@ export const createProject = catchAsyncErrors(
     res: Response,
     next: NextFunction
   ) => {
-    console.log("helloooo")
+    console.log("helloooo");
     const { name, description, color, group } = req.body;
 
     if (!name || !group || !req.user._id)
@@ -29,8 +30,20 @@ export const createProject = catchAsyncErrors(
       createdBy: req.user._id,
     });
 
+    if (!project)
+      return next(
+        new ErrorHandler("Something went wrong while creating project", 500)
+      );
+
     groupExist.projects.push({ project: project._id.toString() });
-    await groupExist.save();
+
+    const groupPromise = groupExist.save();
+    const tasklistPromise = Tasklist.create({
+      title: "Task List",
+      projectId: project._id,
+    });
+
+    await Promise.allSettled([groupPromise, tasklistPromise]);
 
     res.status(201).json({
       success: true,
