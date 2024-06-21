@@ -9,7 +9,7 @@ export interface TaskType extends Document {
   assignedTo?: UserType | ObjectId;
   status: "no progress" | "in progress" | "completed";
   startDate: Date;
-  dueDate: Date;
+  dueDate?: Date;
   priority: "none" | "low" | "medium" | "high";
 }
 

@@ -37,16 +37,26 @@ import { PiSquaresFourThin } from "react-icons/pi";
 import { RiDashboardLine } from "react-icons/ri";
 import { RxCalendar } from "react-icons/rx";
 import { TfiHelpAlt } from "react-icons/tfi";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../reduxToolkit/store";
 import IconElement from "./IconElement";
+import { LogoutUser } from "../reduxToolkit/api_functions/user";
+import { userNotExist } from "../reduxToolkit/slices/userSlice";
+import { signOut } from "firebase/auth";
+import { auth } from "../utils/firebase";
+import { useNavigate } from "react-router-dom";
 
-type SideBarProps = {
-  logoutFunction: () => void;
-};
-
-const SideBar = ({ logoutFunction }: SideBarProps) => {
+const SideBar = () => {
   const { user } = useSelector((state: RootState) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const logoutFunction = async () => {
+    const data = await LogoutUser();
+    dispatch(userNotExist());
+    await signOut(auth);
+    console.log("logout data", data);
+  };
 
   useEffect(() => {
     console.log("hello", user?.name);
@@ -149,11 +159,11 @@ const SideBar = ({ logoutFunction }: SideBarProps) => {
       </Stack>
 
       <VStack
-      //    overflow={"auto"}
+        //    overflow={"auto"}
         h={"full"}
         w={"full"}
         // border={"2px solid blue"}
-         justifyContent={'space-between'}
+        justifyContent={"space-between"}
       >
         <Accordion defaultIndex={[0]} w={"full"} allowToggle>
           <AccordionItem
@@ -208,7 +218,7 @@ const SideBar = ({ logoutFunction }: SideBarProps) => {
                 />
               </AccordionButton>
             </h2>
-            <AccordionPanel p={"10px 0px"} overflow={'auto'} h={'60vh'}>
+            <AccordionPanel p={"10px 0px"} overflow={"auto"} h={"60vh"}>
               {user?.groups?.map((group) => {
                 const GroupName = group.name;
 
@@ -222,6 +232,7 @@ const SideBar = ({ logoutFunction }: SideBarProps) => {
                       cursor={"pointer"}
                       mb={2}
                       key={project.project._id}
+                      onClick={()=> navigate(`/tasklist/${project.project._id}`)}
                     >
                       <Box
                         h={"17px"}
@@ -243,80 +254,76 @@ const SideBar = ({ logoutFunction }: SideBarProps) => {
           </AccordionItem>
         </Accordion>
 
-
-
         <HStack
-        w={"full"}
-        h={"60px"}
-        borderTop={"1px solid gray"}
-       //position={"absolute"}
-        bottom={0}
-        padding={"5px 5px"}
-        justifyContent={"space-between"}
-      >
-        <Menu>
-          <MenuButton>
-            <Avatar
-              name={user?.name}
-              cursor={"pointer"}
-              src={`http://localhost:4000/${user?.photoURL}`}
+          w={"full"}
+          h={"60px"}
+          borderTop={"1px solid gray"}
+          //position={"absolute"}
+          bottom={0}
+          padding={"5px 5px"}
+          justifyContent={"space-between"}
+        >
+          <Menu>
+            <MenuButton>
+              <Avatar
+                name={user?.name}
+                cursor={"pointer"}
+                src={`http://localhost:4000/${user?.photoURL}`}
+              />
+            </MenuButton>
+            <MenuList>
+              <MenuItem icon={<CiUser size={20} />}>My Account</MenuItem>
+              <MenuItem icon={<CiSettings size={20} />}>Manage System</MenuItem>
+              <MenuItem icon={<TfiHelpAlt size={20} />}>Get Support</MenuItem>
+              <MenuItem icon={<CiLogout size={20} />} onClick={logoutFunction}>
+                Logout
+              </MenuItem>
+            </MenuList>
+          </Menu>
+
+          <HStack h={"full"} color={"gray"}>
+            <IconElement
+              IconComponent={CiSearch}
+              label="Search"
+              size={20}
+              p="7px 7px"
+              br="10px"
             />
-          </MenuButton>
-          <MenuList>
-            <MenuItem icon={<CiUser size={20} />}>My Account</MenuItem>
-            <MenuItem icon={<CiSettings size={20} />}>Manage System</MenuItem>
-            <MenuItem icon={<TfiHelpAlt size={20} />}>Get Support</MenuItem>
-            <MenuItem icon={<CiLogout size={20} />} onClick={logoutFunction}>
-              Logout
-            </MenuItem>
-          </MenuList>
-        </Menu>
 
-        <HStack h={"full"} color={"gray"}>
-          <IconElement
-            IconComponent={CiSearch}
-            label="Search"
-            size={20}
-            p="7px 7px"
-            br="10px"
-          />
+            <IconElement
+              IconComponent={CiCirclePlus}
+              label="Quick Add"
+              size={20}
+              p="7px 7px"
+              br="10px"
+            />
 
-          <IconElement
-            IconComponent={CiCirclePlus}
-            label="Quick Add"
-            size={20}
-            p="7px 7px"
-            br="10px"
-          />
+            <IconElement
+              IconComponent={CiBookmark}
+              label="Book Marks"
+              size={20}
+              p="7px 7px"
+              br="10px"
+            />
 
-          <IconElement
-            IconComponent={CiBookmark}
-            label="Book Marks"
-            size={20}
-            p="7px 7px"
-            br="10px"
-          />
+            <IconElement
+              IconComponent={BsClockHistory}
+              label="Full Recap"
+              size={20}
+              p="7px 7px"
+              br="10px"
+            />
 
-          <IconElement
-            IconComponent={BsClockHistory}
-            label="Full Recap"
-            size={20}
-            p="7px 7px"
-            br="10px"
-          />
-
-          <IconElement
-            IconComponent={IoMdNotificationsOutline}
-            label="Notifications"
-            size={20}
-            p="7px 7px"
-            br="10px"
-          />
+            <IconElement
+              IconComponent={IoMdNotificationsOutline}
+              label="Notifications"
+              size={20}
+              p="7px 7px"
+              br="10px"
+            />
+          </HStack>
         </HStack>
-      </HStack>
       </VStack>
-
-     
     </VStack>
   );
 };

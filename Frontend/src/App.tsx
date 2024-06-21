@@ -12,6 +12,8 @@ const LoginPage = lazy(() => import("./pages/LoginPage"));
 const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const RegStep1 = lazy(() => import("./pages/register/RegStep1"));
 const RegStep2 = lazy(() => import("./pages/register/RegStep2"));
+const TasklistPage = lazy(() => import("./pages/TasklistPage"));
+
 
 const App = () => {
   const { loading, user } = useSelector((state: RootState) => state.user);
@@ -19,7 +21,7 @@ const App = () => {
 
   useEffect(() => {
     GetMyProfile(dispatch);
-    console.log('App Rendered')
+    console.log("App Rendered");
   }, [dispatch]);
 
   return loading ? (
@@ -78,6 +80,15 @@ const App = () => {
             element={
               <ProtectedRoute isAuthenticated={user ? true : false}>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/tasklist/:id"
+            element={
+              <ProtectedRoute isAuthenticated={user ? true : false}>
+                <TasklistPage />
               </ProtectedRoute>
             }
           />
