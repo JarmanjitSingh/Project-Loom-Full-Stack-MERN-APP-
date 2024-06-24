@@ -48,8 +48,22 @@ export const getAllTasklist = catchAsyncErrors(
     if (!projectExist)
       return next(new ErrorHandler("Project is not exist", 400));
 
+    // const tasklist = await Tasklist.aggregate([
+    //   {
+    //     $match: { projectId: new mongoose.Types.ObjectId(projectId) },
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "tasks",
+    //       localField: "_id",
+    //       foreignField: "tasklistId",
+    //       as: "tasks",
+    //     },
+    //   },
+    // ]);
+
     const tasklist = await Tasklist.aggregate([
-      { 
+      {
         $match: { projectId: new mongoose.Types.ObjectId(projectId) },
       },
       {
@@ -58,6 +72,55 @@ export const getAllTasklist = catchAsyncErrors(
           localField: "_id",
           foreignField: "tasklistId",
           as: "tasks",
+        },
+      },
+      {
+        $unwind: "$tasks",
+      },
+      {
+        $group: {
+          _id: {
+            tasklistId: "$_id",
+            title: "$title",
+            projectId: "$projectId",
+          },
+          noProgressTasks: {
+            $push: {
+              $cond: [
+                { $eq: ["$tasks.status", "no progress"] },
+                "$tasks",
+                "$$REMOVE",
+              ],
+            },
+          },
+          inProgressTasks: {
+            $push: {
+              $cond: [
+                { $eq: ["$tasks.status", "in progress"] },
+                "$tasks",
+                "$$REMOVE",
+              ],
+            },
+          },
+          completedTasks: {
+            $push: {
+              $cond: [
+                { $eq: ["$tasks.status", "completed"] },
+                "$tasks",
+                "$$REMOVE",
+              ],
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: "$_id.tasklistId",
+          title: "$_id.title",
+          projectId: "$_id.projectId",
+          noProgressTasks: 1,
+          inProgressTasks: 1,
+          completedTasks: 1,
         },
       },
     ]);

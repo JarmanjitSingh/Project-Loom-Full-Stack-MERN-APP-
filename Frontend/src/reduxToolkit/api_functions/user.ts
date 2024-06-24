@@ -124,3 +124,18 @@ export const CreateNewProject = async (
     catchErrorFunction(error);
   }
 };
+
+export const GetProjectTasklists = async(projectId: string)=>{
+  try {
+    const {data} = await axios.post(`${server}/tasklist/all`, {projectId}, {
+      headers: {
+        "Content-Type": "application/json"
+      },
+      withCredentials: true
+    })
+
+    return data;
+  } catch (error) {
+    catchErrorFunction(error)
+  }
+}
