@@ -5,7 +5,7 @@ import {
   getMyProfile,
   logoutUser,
   updateMyAccount,
-  userRegister,
+  userRegister
 } from "../controllers/user.js";
 import { isAuthenticated } from "../middlewares/auth.js";
 import { upload } from "../middlewares/multer.js";
@@ -23,5 +23,6 @@ router.route("/me").get(isAuthenticated, getMyProfile);
 router.route("/logout").get(isAuthenticated, logoutUser);
 
 router.route("/updateMyAccount").post(isAuthenticated, upload.single("file"), updateMyAccount);
+
 
 export default router;

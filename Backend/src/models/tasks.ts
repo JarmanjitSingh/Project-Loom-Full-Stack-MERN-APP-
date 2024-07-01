@@ -8,7 +8,7 @@ export interface TaskType extends Document {
   description?: string;
   assignedTo?: UserType | ObjectId;
   status: "no progress" | "in progress" | "completed";
-  startDate: Date;
+  startDate?: Date;
   dueDate?: Date;
   priority: "none" | "low" | "medium" | "high";
 }
@@ -39,16 +39,16 @@ const schema = new Schema<TaskType>(
     },
     startDate: {
       type: Date,
-      default: Date.now,
+      // default: Date.now,
     },
     dueDate: {
       type: Date,
-      validate: {
-        validator: function (this: TaskType, value: Date) {
-          return !value || value >= this.startDate;
-        },
-        message: "Due date must be after start date.",
-      },
+      // validate: {
+      //   validator: function (this: TaskType, value: Date) {
+      //     return !value || value >= this.startDate;
+      //   },
+      //   message: "Due date must be after start date.",
+      // },
     },
     priority: {
       type: String,
@@ -58,5 +58,12 @@ const schema = new Schema<TaskType>(
   },
   { timestamps: true }
 );
+
+schema.pre('save', function (next) {
+  if (this.title)  this.title = this.title.trim();
+  if (this.description) this.description = this.description.trim();
+
+  next();
+});
 
 export const Tasks = mongoose.model<TaskType>("Tasks", schema);

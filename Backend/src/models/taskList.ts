@@ -25,4 +25,11 @@ const schema = new Schema<TasklistType>(
   }
 );
 
+schema.pre('save', function (next) {
+  if (this.title)  this.title = this.title.trim();
+  if (this.description) this.description = this.description.trim();
+
+  next();
+});
+
 export const Tasklist = mongoose.model<TasklistType>("Tasklist", schema);

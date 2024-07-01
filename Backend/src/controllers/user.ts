@@ -11,6 +11,7 @@ import {
 import { sendToken } from "../utils/sendToken.js";
 import { Invitations } from "../models/invitations.js";
 import { Group } from "../models/group.js";
+import fs from "fs";
 
 export const userRegister = catchAsyncErrors(
   async (
@@ -131,7 +132,7 @@ export const getMyProfile = catchAsyncErrors(
 
     res.status(200).json({
       success: true,
-      user: {...req.user.toObject(), groups: userGroups },
+      user: { ...req.user.toObject(), groups: userGroups },
     });
   }
 );
@@ -178,3 +179,5 @@ export const updateMyAccount = catchAsyncErrors(
     });
   }
 );
+
+

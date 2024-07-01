@@ -48,6 +48,9 @@ const schema = new mongoose.Schema<UserType>(
 schema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password! = await bcrypt.hash(this.password!, 10);
+
+  if(this.name ) this.name = this.name.trim();
+  if(this.email) this.email = this.email.trim();
   next();
 });
 

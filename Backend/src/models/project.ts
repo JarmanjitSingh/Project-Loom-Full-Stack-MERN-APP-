@@ -36,4 +36,11 @@ const schema = new mongoose.Schema<ProjectType>(
   { timestamps: true }
 );
 
+schema.pre('save', function (next) {
+  if (this.name)  this.name = this.name.trim();
+  if (this.description) this.description = this.description.trim();
+
+  next();
+});
+
 export const Project = mongoose.model<ProjectType>("Project", schema);

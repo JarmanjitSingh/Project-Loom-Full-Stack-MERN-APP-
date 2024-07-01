@@ -5,6 +5,7 @@ import { Tasklist } from "../models/taskList.js";
 import { Project } from "../models/project.js";
 import { Tasks } from "../models/tasks.js";
 import mongoose from "mongoose";
+import { Group } from "../models/group.js";
 
 export const createTaskList = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -47,6 +48,9 @@ export const getAllTasklist = catchAsyncErrors(
 
     if (!projectExist)
       return next(new ErrorHandler("Project is not exist", 400));
+
+    const groupMembers = await Group.findById(projectExist.group).populate("members.member");
+
 
     // const tasklist = await Tasklist.aggregate([
     //   {
@@ -130,6 +134,7 @@ export const getAllTasklist = catchAsyncErrors(
     res.status(200).json({
       success: true,
       tasklist,
+      groupMembers: groupMembers?.members
     });
   }
 );

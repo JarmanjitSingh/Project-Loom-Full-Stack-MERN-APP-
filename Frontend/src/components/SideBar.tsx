@@ -44,7 +44,7 @@ import { LogoutUser } from "../reduxToolkit/api_functions/user";
 import { userNotExist } from "../reduxToolkit/slices/userSlice";
 import { signOut } from "firebase/auth";
 import { auth } from "../utils/firebase";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const SideBar = () => {
   const { user } = useSelector((state: RootState) => state.user);
@@ -80,13 +80,15 @@ const SideBar = () => {
         h={"65px"}
         justifyContent={"space-evenly"}
       >
-        <IconElement
-          IconComponent={GoHome}
-          size={24}
-          label="Home"
-          h="100%"
-          w="100%"
-        />
+        <Link to={"/dashboard"} style={{height: "100%", width: "100%"}}>
+          <IconElement
+            IconComponent={GoHome}
+            size={24}
+            label="Home"
+            h="100%"
+            w="100%"
+          />
+        </Link>
         <IconElement
           IconComponent={PiSquaresFourThin}
           size={24}
@@ -232,7 +234,9 @@ const SideBar = () => {
                       cursor={"pointer"}
                       mb={2}
                       key={project.project._id}
-                      onClick={()=> navigate(`/tasklist/${project.project._id}`)}
+                      onClick={() =>
+                        navigate(`/tasklist/${project.project._id}`)
+                      }
                     >
                       <Box
                         h={"17px"}

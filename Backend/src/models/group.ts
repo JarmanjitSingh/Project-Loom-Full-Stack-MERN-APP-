@@ -45,8 +45,17 @@ const schema = new mongoose.Schema<GroupType>(
         },
       },
     ],
-  },
+  }, 
   { timestamps: true }
 );
 
+schema.pre('save', function (next) {
+  if (this.name)  this.name = this.name.trim();
+  if (this.description) this.description = this.description.trim();
+
+  next();
+});
+
 export const Group = mongoose.model<GroupType>("Group", schema);
+
+

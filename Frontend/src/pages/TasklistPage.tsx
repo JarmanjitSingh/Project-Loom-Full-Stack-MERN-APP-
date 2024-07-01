@@ -13,7 +13,7 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BiSolidTime } from "react-icons/bi";
 import { CiSearch } from "react-icons/ci";
 import { FaLayerGroup, FaRegCheckCircle, FaRegHourglass } from "react-icons/fa";
@@ -24,6 +24,7 @@ import Loader from "../components/Loader";
 import SideBar from "../components/SideBar";
 import TaskCard from "../components/TaskCard";
 import { GetProjectTasklists } from "../reduxToolkit/api_functions/user";
+import TaskModal from "../components/TaskModal";
 
 type TaskType = {
   createdAt: Date;
@@ -38,7 +39,7 @@ type TaskType = {
   assignedTo?: string;
 };
 
-type TasklistType = {
+export type TasklistType = {
   _id: string;
   title: string;
   projectId: string;
@@ -51,6 +52,7 @@ const TasklistPage = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [data, setData] = useState<TasklistType>([]);
   const { id } = useParams();
+  const taskModalRef = useRef<HTMLButtonElement>(null!);
 
   useEffect(() => {
     const fetchTasklist = async () => {
@@ -85,9 +87,8 @@ const TasklistPage = () => {
           >
             <HStack
               w={"full"}
-              h={"4rem"}
               justifyContent={"space-between"}
-              p={"0 2rem"}
+              p={"1rem 2rem"}
               bgColor={"white"}
             >
               <HStack>
@@ -115,7 +116,11 @@ const TasklistPage = () => {
               </HStack>
 
               <HStack>
-                <Button leftIcon={<FiPlus size={20} />} colorScheme="green">
+                <Button
+                  leftIcon={<FiPlus size={20} />}
+                  colorScheme="green"
+                  onClick={() => taskModalRef.current.click()}
+                >
                   Add Task
                 </Button>
                 <Button variant={"ghost"} colorScheme="blue">
@@ -129,6 +134,9 @@ const TasklistPage = () => {
               bgColor={"white"}
               w={"full"}
               h={"4rem"}
+              position={"sticky"}
+              top={0}
+              zIndex={1}
             >
               <GridItem
                 border={"1px solid #eaeaea"}
@@ -271,6 +279,8 @@ const TasklistPage = () => {
           </VStack>
         )}
       </HStack>
+
+      <TaskModal referernce={taskModalRef} data={data} />
     </>
   );
 };

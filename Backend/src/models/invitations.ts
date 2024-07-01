@@ -41,6 +41,14 @@ const schema = new mongoose.Schema<InvitationType>(
   { timestamps: true }
 );
 
+schema.pre('save', function (next) {
+  const invitation = this as InvitationType;
+  invitation.members.forEach(member => {
+    if (member.email) member.email = member.email.trim();
+  });
+  next();
+});
+
 export const Invitations = mongoose.model<InvitationType>(
   "Invitations",
   schema
