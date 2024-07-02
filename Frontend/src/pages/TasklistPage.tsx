@@ -78,209 +78,210 @@ const TasklistPage = () => {
         {loading ? (
           <Loader />
         ) : (
-          <VStack
-            h={"full"}
-            w={"100%"}
-            gap={0}
-            bgColor={"#edf2f7"}
-            overflow={"auto"}
-          >
-            <HStack
-              w={"full"}
-              justifyContent={"space-between"}
-              p={"1rem 2rem"}
-              bgColor={"white"}
+          <>
+            <VStack
+              h={"full"}
+              w={"100%"}
+              gap={0}
+              bgColor={"#edf2f7"}
+              overflow={"auto"}
             >
-              <HStack>
-                <Button
-                  leftIcon={<IoFilterOutline size={20} />}
-                  variant={"ghost"}
-                  colorScheme="blue"
-                >
-                  Filter
-                </Button>
-                <Button
-                  leftIcon={<CiSearch size={20} />}
-                  variant={"ghost"}
-                  colorScheme="blue"
-                >
-                  Search
-                </Button>
-                <Button
-                  leftIcon={<FaLayerGroup />}
-                  variant={"ghost"}
-                  colorScheme="blue"
-                >
-                  Group By
-                </Button>
+              <HStack
+                w={"full"}
+                justifyContent={"space-between"}
+                p={"1rem 2rem"}
+                bgColor={"white"}
+              >
+                <HStack>
+                  <Button
+                    leftIcon={<IoFilterOutline size={20} />}
+                    variant={"ghost"}
+                    colorScheme="blue"
+                  >
+                    Filter
+                  </Button>
+                  <Button
+                    leftIcon={<CiSearch size={20} />}
+                    variant={"ghost"}
+                    colorScheme="blue"
+                  >
+                    Search
+                  </Button>
+                  <Button
+                    leftIcon={<FaLayerGroup />}
+                    variant={"ghost"}
+                    colorScheme="blue"
+                  >
+                    Group By
+                  </Button>
+                </HStack>
+
+                <HStack>
+                  <Button
+                    leftIcon={<FiPlus size={20} />}
+                    colorScheme="green"
+                    onClick={() => taskModalRef.current.click()}
+                  >
+                    Add Task
+                  </Button>
+                  <Button variant={"ghost"} colorScheme="blue">
+                    <IoSettingsOutline size={22} />
+                  </Button>
+                </HStack>
               </HStack>
 
-              <HStack>
-                <Button
-                  leftIcon={<FiPlus size={20} />}
-                  colorScheme="green"
-                  onClick={() => taskModalRef.current.click()}
+              <Grid
+                templateColumns={"repeat(3, 1fr)"}
+                bgColor={"white"}
+                w={"full"}
+                h={"4rem"}
+                position={"sticky"}
+                top={0}
+                zIndex={1}
+              >
+                <GridItem
+                  border={"1px solid #eaeaea"}
+                  p={"1rem 2rem"}
+                  display={"flex"}
+                  alignItems={"center"}
+                  justifyContent={"start"}
+                  gap={2}
                 >
-                  Add Task
-                </Button>
-                <Button variant={"ghost"} colorScheme="blue">
-                  <IoSettingsOutline size={22} />
-                </Button>
-              </HStack>
-            </HStack>
+                  {" "}
+                  <FaRegHourglass color="gray" />
+                  <Heading size={"md"}>No Progress</Heading>
+                </GridItem>
+                <GridItem
+                  border={"1px solid #eaeaea"}
+                  p={"1rem 2rem"}
+                  display={"flex"}
+                  alignItems={"center"}
+                  justifyContent={"start"}
+                  gap={2}
+                >
+                  {" "}
+                  <BiSolidTime color="orange" size={20} />{" "}
+                  <Heading size={"md"}>In Progress</Heading>
+                </GridItem>
+                <GridItem
+                  border={"1px solid #eaeaea"}
+                  p={"1rem 2rem"}
+                  display={"flex"}
+                  alignItems={"center"}
+                  justifyContent={"start"}
+                  gap={2}
+                >
+                  {" "}
+                  <FaRegCheckCircle color="green" size={19} />{" "}
+                  <Heading size={"md"}>Completed</Heading>{" "}
+                </GridItem>
+              </Grid>
 
-            <Grid
-              templateColumns={"repeat(3, 1fr)"}
-              bgColor={"white"}
-              w={"full"}
-              h={"4rem"}
-              position={"sticky"}
-              top={0}
-              zIndex={1}
-            >
-              <GridItem
-                border={"1px solid #eaeaea"}
-                p={"1rem 2rem"}
-                display={"flex"}
-                alignItems={"center"}
-                justifyContent={"start"}
-                gap={2}
-              >
-                {" "}
-                <FaRegHourglass color="gray" />
-                <Heading size={"md"}>No Progress</Heading>
-              </GridItem>
-              <GridItem
-                border={"1px solid #eaeaea"}
-                p={"1rem 2rem"}
-                display={"flex"}
-                alignItems={"center"}
-                justifyContent={"start"}
-                gap={2}
-              >
-                {" "}
-                <BiSolidTime color="orange" size={20} />{" "}
-                <Heading size={"md"}>In Progress</Heading>
-              </GridItem>
-              <GridItem
-                border={"1px solid #eaeaea"}
-                p={"1rem 2rem"}
-                display={"flex"}
-                alignItems={"center"}
-                justifyContent={"start"}
-                gap={2}
-              >
-                {" "}
-                <FaRegCheckCircle color="green" size={19} />{" "}
-                <Heading size={"md"}>Completed</Heading>{" "}
-              </GridItem>
-            </Grid>
+              {data &&
+                data.length > 0 &&
+                data.map((tasklist) => (
+                  <Accordion allowMultiple w={"full"} key={tasklist._id}>
+                    <AccordionItem>
+                      <h2 style={{ height: "4rem", display: "flex" }}>
+                        <AccordionButton p={"0 2rem"}>
+                          <AccordionIcon mr={2} />
+                          <Box as="span" flex="1" textAlign="left">
+                            <Heading size={"sm"} color={"GrayText"}>
+                              {tasklist.title}
+                            </Heading>
+                            <Text fontSize={"xs"} color={"gray"}>
+                              description
+                            </Text>
+                          </Box>
+                        </AccordionButton>
+                      </h2>
+                      <AccordionPanel
+                        pb={4}
+                        p={0}
+                        borderTop={"1px solid #e0e0e0"}
+                      >
+                        <Grid templateColumns={"repeat(3, 1fr)"} w={"full"}>
+                          <GridItem
+                            borderRight={"1px solid #e0e0e0"}
+                            p={"1rem"}
+                            display={"flex"}
+                            alignItems={"center"}
+                            justifyContent={"center"}
+                            flexDirection={"column"}
+                            h={"full"}
+                            gap={2}
+                          >
+                            {tasklist.noProgressTasks &&
+                              tasklist.noProgressTasks.length > 0 &&
+                              tasklist.noProgressTasks.map((task) => {
+                                return (
+                                  <TaskCard
+                                    key={task._id}
+                                    title={task.title}
+                                    assignedTo={task.assignedTo}
+                                    StatusIcon={FaRegHourglass}
+                                  />
+                                );
+                              })}
+                          </GridItem>
 
-            {data &&
-              data.length > 0 &&
-              data.map((tasklist) => (
-                <Accordion allowMultiple w={"full"} key={tasklist._id}>
-                  <AccordionItem>
-                    <h2 style={{ height: "4rem", display: "flex" }}>
-                      <AccordionButton p={"0 2rem"}>
-                        <AccordionIcon mr={2} />
-                        <Box as="span" flex="1" textAlign="left">
-                          <Heading size={"sm"} color={"GrayText"}>
-                            {tasklist.title}
-                          </Heading>
-                          <Text fontSize={"xs"} color={"gray"}>
-                            description
-                          </Text>
-                        </Box>
-                      </AccordionButton>
-                    </h2>
-                    <AccordionPanel
-                      pb={4}
-                      p={0}
-                      borderTop={"1px solid #e0e0e0"}
-                    >
-                      <Grid templateColumns={"repeat(3, 1fr)"} w={"full"}>
-                        <GridItem
-                          borderRight={"1px solid #e0e0e0"}
-                          p={"1rem"}
-                          display={"flex"}
-                          alignItems={"center"}
-                          justifyContent={"center"}
-                          flexDirection={"column"}
-                          h={"full"}
-                          gap={2}
-                        >
-                          {tasklist.noProgressTasks &&
-                            tasklist.noProgressTasks.length > 0 &&
-                            tasklist.noProgressTasks.map((task) => {
-                              return (
-                                <TaskCard
-                                  key={task._id}
-                                  title={task.title}
-                                  assignedTo={task.assignedTo}
-                                  StatusIcon={FaRegHourglass}
-                                />
-                              );
-                            })}
-                        </GridItem>
+                          <GridItem
+                            borderRight={"1px solid #e0e0e0"}
+                            p={"1rem"}
+                            display={"flex"}
+                            alignItems={"center"}
+                            justifyContent={"center"}
+                            flexDirection={"column"}
+                            h={"full"}
+                            gap={2}
+                          >
+                            {tasklist.inProgressTasks &&
+                              tasklist.inProgressTasks.length > 0 &&
+                              tasklist.inProgressTasks.map((task) => {
+                                return (
+                                  <TaskCard
+                                    key={task._id}
+                                    title={task.title}
+                                    assignedTo={task.assignedTo}
+                                    StatusIcon={BiSolidTime}
+                                  />
+                                );
+                              })}
+                          </GridItem>
 
-                        <GridItem
-                          borderRight={"1px solid #e0e0e0"}
-                          p={"1rem"}
-                          display={"flex"}
-                          alignItems={"center"}
-                          justifyContent={"center"}
-                          flexDirection={"column"}
-                          h={"full"}
-                          gap={2}
-                        >
-                          {tasklist.inProgressTasks &&
-                            tasklist.inProgressTasks.length > 0 &&
-                            tasklist.inProgressTasks.map((task) => {
-                              return (
-                                <TaskCard
-                                  key={task._id}
-                                  title={task.title}
-                                  assignedTo={task.assignedTo}
-                                  StatusIcon={BiSolidTime}
-                                />
-                              );
-                            })}
-                        </GridItem>
-
-                        <GridItem
-                          borderRight={"1px solid #e0e0e0"}
-                          p={"1rem"}
-                          display={"flex"}
-                          alignItems={"center"}
-                          flexDirection={"column"}
-                          justifyContent={"center"}
-                          h={"full"}
-                          gap={2}
-                        >
-                          {tasklist.completedTasks &&
-                            tasklist.completedTasks.length > 0 &&
-                            tasklist.completedTasks.map((task) => {
-                              return (
-                                <TaskCard
-                                  key={task._id}
-                                  title={task.title}
-                                  assignedTo={task.assignedTo}
-                                  StatusIcon={FaRegCheckCircle}
-                                />
-                              );
-                            })}
-                        </GridItem>
-                      </Grid>
-                    </AccordionPanel>
-                  </AccordionItem>
-                </Accordion>
-              ))}
-          </VStack>
+                          <GridItem
+                            borderRight={"1px solid #e0e0e0"}
+                            p={"1rem"}
+                            display={"flex"}
+                            alignItems={"center"}
+                            flexDirection={"column"}
+                            justifyContent={"center"}
+                            h={"full"}
+                            gap={2}
+                          >
+                            {tasklist.completedTasks &&
+                              tasklist.completedTasks.length > 0 &&
+                              tasklist.completedTasks.map((task) => {
+                                return (
+                                  <TaskCard
+                                    key={task._id}
+                                    title={task.title}
+                                    assignedTo={task.assignedTo}
+                                    StatusIcon={FaRegCheckCircle}
+                                  />
+                                );
+                              })}
+                          </GridItem>
+                        </Grid>
+                      </AccordionPanel>
+                    </AccordionItem>
+                  </Accordion>
+                ))}
+            </VStack>
+            <TaskModal referernce={taskModalRef} data={data} />
+          </>
         )}
       </HStack>
-
-      <TaskModal referernce={taskModalRef} data={data} />
     </>
   );
 };

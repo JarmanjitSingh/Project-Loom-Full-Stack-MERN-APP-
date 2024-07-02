@@ -15,58 +15,63 @@ import {
   useDisclosure,
   useToast,
 } from "@chakra-ui/react";
-import axios, { AxiosError } from "axios";
-import { FormEvent, RefObject, useState } from "react";
-import { IoMdAdd } from "react-icons/io";
-import { useDispatch } from "react-redux";
-import { addNewGroup } from "../reduxToolkit/api_functions/user";
-import { showToast } from "../utils/toast";
-import TextEditor from "./TextEditor";
-import { FaRegCheckCircle, FaRegHourglass } from "react-icons/fa";
+import { FormEvent, RefObject, useEffect, useState } from "react";
 import { BiSolidTime } from "react-icons/bi";
+import { FaRegCheckCircle, FaRegHourglass } from "react-icons/fa";
+import { IoMdAdd } from "react-icons/io";
 import { TasklistType } from "../pages/TasklistPage";
+import { createTask } from "../reduxToolkit/api_functions/user";
+import { showToast } from "../utils/toast";
+import { catchErrorFunction } from "../utils/utils";
+import TextEditor from "./TextEditor";
 
-type GroupModalProps = {
+type TaskModalProps = {
   referernce: RefObject<HTMLButtonElement>;
-  data: TasklistType
+  data: TasklistType;
 };
 
-type GroupType = {
-  name: string;
-  description?: string;
+export type TaskType = {
+  title: string;
+  tasklistId: string;
+  description: string;
+  assignedTo: string | null;
+  status: "no progress" | "in progress" | "completed";
+  startDate: Date | null;
+  dueDate: Date | null;
+  priority: "none" | "low" | "medium" | "high";
 };
 
-const groupData: GroupType = {
-  name: "",
+const taskData: TaskType = {
+  title: "",
+  tasklistId: "",
   description: "",
+  assignedTo: null,
+  status: "no progress",
+  startDate: null,
+  dueDate: null,
+  priority: "none",
 };
 
-const TaskModal = ({ referernce, data }: GroupModalProps) => {
+const TaskModal = ({ referernce, data }: TaskModalProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [group, setGroup] = useState(groupData as GroupType);
+  const [task, setTask] = useState(taskData as TaskType);
   const [loading, setLoading] = useState<boolean>(false);
-  const [content, setContent] = useState<string>("");
   const toast = useToast();
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   const handleTaskSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    console.log("task state", task)
+
     try {
-      const data = await addNewGroup(group, dispatch);
+      const data = await createTask(task, toast);
       closeModal();
       showToast(toast, data.message);
-      console.log(data);
+      console.log("saved task data", data);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const axiosError = error as AxiosError;
-        showToast(toast, axiosError.message, "error");
-
-        console.error("Axios Error:", axiosError.message);
-        console.error("Axios Response Data:", axiosError.response?.data);
-      } else {
-        console.error("Non-Axios Error:", error);
-      }
+      catchErrorFunction(error, null, toast);
     } finally {
       setLoading(false);
     }
@@ -74,8 +79,16 @@ const TaskModal = ({ referernce, data }: GroupModalProps) => {
 
   const closeModal = () => {
     onClose();
-    setGroup(groupData);
+    setTask({...task, tasklistId: data[0]?._id});
   };
+
+  useEffect(() => {
+    if (data && data.length > 0 && task.tasklistId === "") {
+      setTask({ ...task, tasklistId: data[0]._id });
+      console.log("tasklist id ", data[0]._id )
+    }
+
+  }, [data]);
 
   return (
     <>
@@ -99,10 +112,11 @@ const TaskModal = ({ referernce, data }: GroupModalProps) => {
                 <FormLabel fontSize={"sm"}>Task List</FormLabel>
                 <HStack>
                   <Select
-                    // value={project.group}
-                    // onChange={(e) =>
-                    //   setProject({ ...project, group: e.target.value })
-                    // }
+                    value={task.tasklistId}
+                    onChange={(e) =>
+                      setTask({ ...task, tasklistId: e.target.value })
+                    }
+                    required
                   >
                     {data &&
                       data?.map((tasklist) => {
@@ -128,55 +142,104 @@ const TaskModal = ({ referernce, data }: GroupModalProps) => {
                 <FormLabel fontSize={"sm"}>Title</FormLabel>
                 <Input
                   placeholder="Title"
-                  // value={group.name}
-                  // onChange={(e) => setGroup({ ...group, name: e.target.value })}
+                  value={task.title}
+                  onChange={(e) => setTask({ ...task, title: e.target.value })}
                 />
               </FormControl>
 
               <FormControl mt={2}>
                 <FormLabel fontSize={"sm"}>Description</FormLabel>
 
-                <TextEditor content={content} setContent={setContent} />
+                <TextEditor content={task} setContent={setTask} />
               </FormControl>
 
               <HStack mt={6}>
-                <FormControl isRequired>
+                <FormControl>
                   <FormLabel fontSize={"sm"}>Assigned to</FormLabel>
-                  <Select>
-                    <option>Unassigned</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
+                  <Select
+                    value={task.assignedTo || ""}
+                    onChange={(e) =>
+                      setTask({
+                        ...task,
+                        assignedTo:
+                          e.target.value === "" ? null : e.target.value,
+                      })
+                    }
+                  >
+                    <option value="" selected>
+                      Unassigned
+                    </option>
                   </Select>
                 </FormControl>
 
                 <FormControl isRequired>
                   <FormLabel fontSize={"sm"}>Status</FormLabel>
-                  <Select>
-                    <option value="option1"><FaRegHourglass color="gray" /> No progress</option>
-                    <option value="option2"><BiSolidTime color="orange" size={20} />In progress</option>
-                    <option value="option3"><FaRegCheckCircle color="green" size={19} />Completed</option>
+                  <Select
+                    value={task.status}
+                    onChange={(e) =>
+                      setTask({
+                        ...task,
+                        status: e.target.value as
+                          | "no progress"
+                          | "in progress"
+                          | "completed",
+                      })
+                    }
+                  >
+                    <option value="no progress">
+                      <FaRegHourglass color="gray" /> No progress
+                    </option>
+                    <option value="in progress">
+                      <BiSolidTime color="orange" size={20} />
+                      In progress
+                    </option>
+                    <option value="completed">
+                      <FaRegCheckCircle color="green" size={19} />
+                      Completed
+                    </option>
                   </Select>
                 </FormControl>
               </HStack>
 
-
               <FormControl mt={2}>
                 <FormLabel fontSize={"sm"}>Due Date</FormLabel>
 
-                <Input placeholder='Due Date' type='date' readOnly/>
+                <Input
+                  placeholder="Due Date"
+                  type="date"
+                  value={
+                    task.dueDate ? task.dueDate.toISOString().split("T")[0] : ""
+                  }
+                  onChange={(e) =>
+                    setTask({
+                      ...task,
+                      dueDate: e.target.value ? new Date(e.target.value) : null,
+                    })
+                  }
+                />
               </FormControl>
 
               <FormControl>
-                  <FormLabel fontSize={"sm"}>Priority</FormLabel>
-                  <Select>
-                    <option value="none">None</option>
-                    <option value="low">Low</option>
-                    <option value="medium">Medium</option>
-                    <option value="high">High</option>
-                  </Select>
-                </FormControl>
-
-              
+                <FormLabel fontSize={"sm"}>Priority</FormLabel>
+                <Select
+                  value={task.priority}
+                  onChange={(e) =>
+                    setTask({
+                      ...task,
+                      priority: e.target.value as
+                        | "none"
+                        | "low"
+                        | "medium"
+                        | "high",
+                    })
+                  }
+                >
+                  <option value="none">None</option>
+                  <option value="low">Low</option>
+                  <option value="medium">Medium</option>
+                  <option value="high">High</option>
+                </Select>
+              </FormControl>
             </ModalBody>
 
             <ModalFooter>
@@ -189,7 +252,7 @@ const TaskModal = ({ referernce, data }: GroupModalProps) => {
                 Close
               </Button>
               <Button isLoading={loading} type="submit" colorScheme="green">
-                Add Group
+                Add Task
               </Button>
             </ModalFooter>
           </form>

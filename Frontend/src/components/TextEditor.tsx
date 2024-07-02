@@ -1,15 +1,14 @@
 import JoditEditor, { Jodit } from "jodit-react";
 import { useMemo, useRef } from "react";
+import { TaskType } from "./TaskModal";
 
 type TextEditorPropTypes = {
-  content: string;
-  setContent: React.Dispatch<React.SetStateAction<string>>;
+  content: TaskType;
+  setContent: React.Dispatch<React.SetStateAction<TaskType>>;
 };
 
 const TextEditor = ({ content, setContent }: TextEditorPropTypes) => {
   const editor = useRef<Jodit | null>(null);
-
-  console.log(content);
 
   const config = useMemo(
     () => ({
@@ -29,11 +28,10 @@ const TextEditor = ({ content, setContent }: TextEditorPropTypes) => {
         "link",
         "unlink",
         "brush",
-        "eraser"
+        "eraser",
       ],
       toolbarAdaptive: false,
       addNewLine: false,
-      
     }),
     []
   );
@@ -41,10 +39,12 @@ const TextEditor = ({ content, setContent }: TextEditorPropTypes) => {
   return (
     <JoditEditor
       ref={editor}
-      value={content}
+      value={content.description}
       config={config}
       // tabIndex={1} // tabIndex of textarea
-      onBlur={(newContent: string) => setContent(newContent)}
+      onBlur={(newContent: string) =>
+        setContent({ ...content, description: newContent })
+      }
       // onChange={(newContent: string) => setContent(newContent)}
     />
   );

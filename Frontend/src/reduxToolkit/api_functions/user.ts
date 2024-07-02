@@ -10,6 +10,7 @@ import {
 import { catchErrorFunction } from "../../utils/utils";
 import { userExist } from "../slices/userSlice";
 import { ToastId, UseToastOptions } from "@chakra-ui/react";
+import { TaskType } from "../../components/TaskModal";
 
 const server = import.meta.env.VITE_SERVER;
 
@@ -29,7 +30,8 @@ export const LoginWithGoogleApi = async (formData: LoginWithGoogleType) => {
 };
 
 export const EmailPasswordLoginApi = async (
-  formData: LoginWithEmailPasswordType, toast: (options?: UseToastOptions | undefined) => ToastId
+  formData: LoginWithEmailPasswordType,
+  toast: (options?: UseToastOptions | undefined) => ToastId
 ) => {
   try {
     const { data } = await axios.post(
@@ -45,7 +47,7 @@ export const EmailPasswordLoginApi = async (
 
     return data;
   } catch (error) {
-    catchErrorFunction(error, undefined, toast );
+    catchErrorFunction(error, undefined, toast);
   }
 };
 
@@ -125,17 +127,38 @@ export const CreateNewProject = async (
   }
 };
 
-export const GetProjectTasklists = async(projectId: string)=>{
+export const GetProjectTasklists = async (projectId: string) => {
   try {
-    const {data} = await axios.post(`${server}/tasklist/all`, {projectId}, {
-      headers: {
-        "Content-Type": "application/json"
-      },
-      withCredentials: true
-    })
+    const { data } = await axios.post(
+      `${server}/tasklist/all`,
+      { projectId },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
 
     return data;
   } catch (error) {
-    catchErrorFunction(error)
+    catchErrorFunction(error);
   }
-}
+};
+
+export const createTask = async (
+  formData: TaskType,
+  toast: (options?: UseToastOptions | undefined) => ToastId
+) => {
+  try {
+    const { data } = await axios.post(`${server}/task/create`, formData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    return data;
+  } catch (error) {
+    catchErrorFunction(error, null, toast);
+  }
+};
