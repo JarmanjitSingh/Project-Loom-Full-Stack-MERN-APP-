@@ -13,18 +13,20 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { BiSolidTime } from "react-icons/bi";
 import { CiSearch } from "react-icons/ci";
 import { FaLayerGroup, FaRegCheckCircle, FaRegHourglass } from "react-icons/fa";
 import { FiPlus } from "react-icons/fi";
 import { IoFilterOutline, IoSettingsOutline } from "react-icons/io5";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import Loader from "../components/Loader";
 import SideBar from "../components/SideBar";
 import TaskCard from "../components/TaskCard";
-import { GetProjectTasklists } from "../reduxToolkit/api_functions/user";
 import TaskModal from "../components/TaskModal";
+import { GetProjectTasklists } from "../reduxToolkit/api_functions/user";
+import { RootState } from "../reduxToolkit/store";
 
 type TaskType = {
   createdAt: Date;
@@ -49,26 +51,33 @@ export type TasklistType = {
 }[];
 
 const TasklistPage = () => {
-  const [loading, setLoading] = useState<boolean>(true);
-  const [data, setData] = useState<TasklistType>([]);
+  // const [loading, setLoading] = useState<boolean>(true);
+  // const [data, setData] = useState<TasklistType>([]);
   const { id } = useParams();
   const taskModalRef = useRef<HTMLButtonElement>(null!);
 
-  useEffect(() => {
-    const fetchTasklist = async () => {
-      try {
-        const data = await GetProjectTasklists(id as string);
-        setData(data.tasklist);
-        console.log(data.tasklist);
-      } catch (error) {
-        console.log("Error while fetching tasklist", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const { loading, tasklist: data } = useSelector((state: RootState) => state.tasklist);
+  const dispatch = useDispatch();
 
-    fetchTasklist();
-  }, [id]);
+  useEffect(() => {
+    GetProjectTasklists(id as string, dispatch);
+  }, [dispatch]);
+
+  // useEffect(() => {
+  //   const fetchTasklist = async () => {
+  //     try {
+  //       const data = await GetProjectTasklists(id as string);
+  //       setData(data.tasklist);
+  //       console.log(data.tasklist);
+  //     } catch (error) {
+  //       console.log("Error while fetching tasklist", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchTasklist();
+  // }, [id]);
 
   return (
     <>
@@ -206,7 +215,7 @@ const TasklistPage = () => {
                             p={"1rem"}
                             display={"flex"}
                             alignItems={"center"}
-                            justifyContent={"center"}
+                            //justifyContent={"center"}
                             flexDirection={"column"}
                             h={"full"}
                             gap={2}
@@ -220,6 +229,9 @@ const TasklistPage = () => {
                                     title={task.title}
                                     assignedTo={task.assignedTo}
                                     StatusIcon={FaRegHourglass}
+                                    iconColor="gray"
+                                    iconSize={16}
+
                                   />
                                 );
                               })}
@@ -230,7 +242,7 @@ const TasklistPage = () => {
                             p={"1rem"}
                             display={"flex"}
                             alignItems={"center"}
-                            justifyContent={"center"}
+                            // justifyContent={"center"}
                             flexDirection={"column"}
                             h={"full"}
                             gap={2}
@@ -244,6 +256,9 @@ const TasklistPage = () => {
                                     title={task.title}
                                     assignedTo={task.assignedTo}
                                     StatusIcon={BiSolidTime}
+                                    iconColor="orange"
+                                    iconSize={20}
+
                                   />
                                 );
                               })}
@@ -255,7 +270,7 @@ const TasklistPage = () => {
                             display={"flex"}
                             alignItems={"center"}
                             flexDirection={"column"}
-                            justifyContent={"center"}
+                            // justifyContent={"center"}
                             h={"full"}
                             gap={2}
                           >
@@ -268,6 +283,8 @@ const TasklistPage = () => {
                                     title={task.title}
                                     assignedTo={task.assignedTo}
                                     StatusIcon={FaRegCheckCircle}
+                                    iconColor="green"
+                                    iconSize={19}
                                   />
                                 );
                               })}
@@ -278,7 +295,7 @@ const TasklistPage = () => {
                   </Accordion>
                 ))}
             </VStack>
-            <TaskModal referernce={taskModalRef} data={data} />
+            <TaskModal referernce={taskModalRef} data={data!} />
           </>
         )}
       </HStack>

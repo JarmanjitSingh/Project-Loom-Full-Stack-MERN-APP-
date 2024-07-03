@@ -20,10 +20,12 @@ import { BiSolidTime } from "react-icons/bi";
 import { FaRegCheckCircle, FaRegHourglass } from "react-icons/fa";
 import { IoMdAdd } from "react-icons/io";
 import { TasklistType } from "../pages/TasklistPage";
-import { createTask } from "../reduxToolkit/api_functions/user";
+import { GetProjectTasklists, createTask } from "../reduxToolkit/api_functions/user";
 import { showToast } from "../utils/toast";
 import { catchErrorFunction } from "../utils/utils";
 import TextEditor from "./TextEditor";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
 
 type TaskModalProps = {
   referernce: RefObject<HTMLButtonElement>;
@@ -57,7 +59,8 @@ const TaskModal = ({ referernce, data }: TaskModalProps) => {
   const [task, setTask] = useState(taskData as TaskType);
   const [loading, setLoading] = useState<boolean>(false);
   const toast = useToast();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
+  const {id} = useParams();
 
   const handleTaskSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -66,9 +69,10 @@ const TaskModal = ({ referernce, data }: TaskModalProps) => {
     console.log("task state", task)
 
     try {
-      const data = await createTask(task, toast);
+      const data = await createTask(task, toast, dispatch);
       closeModal();
       showToast(toast, data.message);
+      GetProjectTasklists(id as string, dispatch)
       console.log("saved task data", data);
     } catch (error) {
       catchErrorFunction(error, null, toast);

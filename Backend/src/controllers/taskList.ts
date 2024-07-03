@@ -127,6 +127,9 @@ export const getAllTasklist = catchAsyncErrors(
           completedTasks: 1,
         },
       },
+      {
+        $sort: { _id: 1 } 
+      }
     ]);
 
     if (!tasklist) return next(new ErrorHandler("Something went wrong", 500));

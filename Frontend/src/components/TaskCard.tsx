@@ -1,13 +1,13 @@
 import {
-    Avatar,
-    Box,
-    Card,
-    CardBody,
-    Divider,
-    HStack,
-    Heading,
-    Text,
-    VStack,
+  Avatar,
+  Box,
+  Card,
+  CardBody,
+  Divider,
+  HStack,
+  Heading,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
 import { IconType } from "react-icons";
 import { CiFolderOn } from "react-icons/ci";
@@ -18,18 +18,21 @@ type TaskType = {
   title: string;
   assignedTo?: string;
   StatusIcon: IconType;
+  iconColor: string;
+  iconSize: number;
 };
 
-const TaskCard = ({ title, assignedTo, StatusIcon }: TaskType) => {
+const TaskCard = ({ title, assignedTo, StatusIcon, iconColor, iconSize }: TaskType) => {
+  console.log(StatusIcon, StatusIcon.toString());
   return (
     <>
       <Card w={"full"}>
         <CardBody>
           <VStack>
-            <HStack w={"full"} justifyContent={'space-between'}>
+            <HStack w={"full"} justifyContent={"space-between"}>
               <HStack gap={4}>
                 {" "}
-                <StatusIcon />{" "}
+                <StatusIcon color={iconColor} size={iconSize} />{" "}
                 <Heading size={"xs"}>{title}</Heading>
               </HStack>
               <HStack>

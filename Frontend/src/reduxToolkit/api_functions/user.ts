@@ -1,5 +1,7 @@
+import { ToastId, UseToastOptions } from "@chakra-ui/react";
 import { Dispatch, UnknownAction } from "@reduxjs/toolkit";
 import axios from "axios";
+import { TaskType } from "../../components/TaskModal";
 import {
   LoginWithEmailPasswordType,
   LoginWithGoogleType,
@@ -8,9 +10,8 @@ import {
   NewUserRequestBody,
 } from "../../types/RequestBodyTypes";
 import { catchErrorFunction } from "../../utils/utils";
+import { tasklistData, tasklistDataNotFound, tasklistLoadingTrue } from "../slices/tasklistSlice";
 import { userExist } from "../slices/userSlice";
-import { ToastId, UseToastOptions } from "@chakra-ui/react";
-import { TaskType } from "../../components/TaskModal";
 
 const server = import.meta.env.VITE_SERVER;
 
@@ -127,7 +128,10 @@ export const CreateNewProject = async (
   }
 };
 
-export const GetProjectTasklists = async (projectId: string) => {
+export const GetProjectTasklists = async (
+  projectId: string,
+  dispatch: Dispatch<UnknownAction>
+) => {
   try {
     const { data } = await axios.post(
       `${server}/tasklist/all`,
@@ -140,17 +144,23 @@ export const GetProjectTasklists = async (projectId: string) => {
       }
     );
 
+    dispatch(tasklistData(data.tasklist));
+
     return data;
   } catch (error) {
+    dispatch(tasklistDataNotFound());
+
     catchErrorFunction(error);
   }
 };
 
 export const createTask = async (
   formData: TaskType,
-  toast: (options?: UseToastOptions | undefined) => ToastId
+  toast: (options?: UseToastOptions | undefined) => ToastId,
+  dispatch: Dispatch<UnknownAction>
 ) => {
   try {
+    dispatch(tasklistLoadingTrue())
     const { data } = await axios.post(`${server}/task/create`, formData, {
       headers: {
         "Content-Type": "application/json",
