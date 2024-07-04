@@ -52,6 +52,7 @@ export const getAllTasklist = catchAsyncErrors(
     const groupMembers = await Group.findById(projectExist.group).populate("members.member");
 
 
+    // This will return the empty tasklist also
     // const tasklist = await Tasklist.aggregate([
     //   {
     //     $match: { projectId: new mongoose.Types.ObjectId(projectId) },
@@ -79,7 +80,10 @@ export const getAllTasklist = catchAsyncErrors(
         },
       },
       {
-        $unwind: "$tasks",
+        $unwind: {
+          path: "$tasks",
+          preserveNullAndEmptyArrays: true, // This will keep tasklist documents even if there are no tasks
+        }
       },
       {
         $group: {

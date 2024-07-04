@@ -27,6 +27,8 @@ import TaskCard from "../components/TaskCard";
 import TaskModal from "../components/TaskModal";
 import { GetProjectTasklists } from "../reduxToolkit/api_functions/user";
 import { RootState } from "../reduxToolkit/store";
+import { PiListPlusThin } from "react-icons/pi";
+import TasklistModal from "../components/TasklistModal";
 
 type TaskType = {
   createdAt: Date;
@@ -51,33 +53,18 @@ export type TasklistType = {
 }[];
 
 const TasklistPage = () => {
-  // const [loading, setLoading] = useState<boolean>(true);
-  // const [data, setData] = useState<TasklistType>([]);
   const { id } = useParams();
   const taskModalRef = useRef<HTMLButtonElement>(null!);
+  const taskListModalRef = useRef<HTMLButtonElement>(null!);
 
-  const { loading, tasklist: data } = useSelector((state: RootState) => state.tasklist);
+  const { loading, tasklist: data } = useSelector(
+    (state: RootState) => state.tasklist
+  );
   const dispatch = useDispatch();
 
   useEffect(() => {
     GetProjectTasklists(id as string, dispatch);
   }, [dispatch]);
-
-  // useEffect(() => {
-  //   const fetchTasklist = async () => {
-  //     try {
-  //       const data = await GetProjectTasklists(id as string);
-  //       setData(data.tasklist);
-  //       console.log(data.tasklist);
-  //     } catch (error) {
-  //       console.log("Error while fetching tasklist", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchTasklist();
-  // }, [id]);
 
   return (
     <>
@@ -231,7 +218,6 @@ const TasklistPage = () => {
                                     StatusIcon={FaRegHourglass}
                                     iconColor="gray"
                                     iconSize={16}
-
                                   />
                                 );
                               })}
@@ -258,7 +244,6 @@ const TasklistPage = () => {
                                     StatusIcon={BiSolidTime}
                                     iconColor="orange"
                                     iconSize={20}
-
                                   />
                                 );
                               })}
@@ -294,8 +279,20 @@ const TasklistPage = () => {
                     </AccordionItem>
                   </Accordion>
                 ))}
+
+              <Button
+                variant={"ghost"}
+                colorScheme="blue"
+                leftIcon={<PiListPlusThin size={22} />}
+                mt={4}
+                onClick={() => taskListModalRef.current.click()}
+              >
+                Add List
+              </Button>
             </VStack>
+
             <TaskModal referernce={taskModalRef} data={data!} />
+            <TasklistModal referernce={taskListModalRef} />
           </>
         )}
       </HStack>

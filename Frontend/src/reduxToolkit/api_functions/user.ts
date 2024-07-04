@@ -10,8 +10,13 @@ import {
   NewUserRequestBody,
 } from "../../types/RequestBodyTypes";
 import { catchErrorFunction } from "../../utils/utils";
-import { tasklistData, tasklistDataNotFound, tasklistLoadingTrue } from "../slices/tasklistSlice";
+import {
+  tasklistData,
+  tasklistDataNotFound,
+  tasklistLoadingTrue,
+} from "../slices/tasklistSlice";
 import { userExist } from "../slices/userSlice";
+import { TasklistFormData } from "../../components/TasklistModal";
 
 const server = import.meta.env.VITE_SERVER;
 
@@ -64,7 +69,10 @@ export const LogoutUser = async () => {
   }
 };
 
-export const RegisterUserLoginApi = async (formData: NewUserRequestBody) => {
+export const RegisterUserLoginApi = async (
+  formData: NewUserRequestBody,
+  toast: (options?: UseToastOptions | undefined) => ToastId
+) => {
   try {
     const { data } = await axios.post(`${server}/user/register`, formData, {
       headers: {
@@ -75,7 +83,7 @@ export const RegisterUserLoginApi = async (formData: NewUserRequestBody) => {
 
     return data;
   } catch (error) {
-    catchErrorFunction(error);
+    catchErrorFunction(error, null, toast);
   }
 };
 
@@ -160,8 +168,26 @@ export const createTask = async (
   dispatch: Dispatch<UnknownAction>
 ) => {
   try {
-    dispatch(tasklistLoadingTrue())
+    dispatch(tasklistLoadingTrue());
     const { data } = await axios.post(`${server}/task/create`, formData, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    return data;
+  } catch (error) {
+    catchErrorFunction(error, null, toast);
+  }
+};
+
+
+export const createTasklist = async (
+  formData: TasklistFormData,
+  toast: (options?: UseToastOptions | undefined) => ToastId,
+) => {
+  try {
+    const { data } = await axios.post(`${server}/tasklist/create`, formData, {
       headers: {
         "Content-Type": "application/json",
       },

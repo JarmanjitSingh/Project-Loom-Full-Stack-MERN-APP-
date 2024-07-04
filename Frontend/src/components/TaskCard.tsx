@@ -22,7 +22,13 @@ type TaskType = {
   iconSize: number;
 };
 
-const TaskCard = ({ title, assignedTo, StatusIcon, iconColor, iconSize }: TaskType) => {
+const TaskCard = ({
+  title,
+  assignedTo,
+  StatusIcon,
+  iconColor,
+  iconSize,
+}: TaskType) => {
   console.log(StatusIcon, StatusIcon.toString());
   return (
     <>
@@ -30,12 +36,21 @@ const TaskCard = ({ title, assignedTo, StatusIcon, iconColor, iconSize }: TaskTy
         <CardBody>
           <VStack>
             <HStack w={"full"} justifyContent={"space-between"}>
-              <HStack gap={4}>
+              <HStack gap={4} border={"1px solid green"} w={"full"}>
                 {" "}
                 <StatusIcon color={iconColor} size={iconSize} />{" "}
-                <Heading size={"xs"}>{title}</Heading>
+                <Heading
+                  size={"xs"}
+                  overflow={"hidden"}
+                  textOverflow={"ellipsis"}
+                  whiteSpace={"nowrap"}
+                  border={"1px solid red"}
+                  w={"full"}
+                >
+                  {title}
+                </Heading>
               </HStack>
-              <HStack>
+              <HStack border={"1px solid blue"}>
                 <Box
                   border={"1px solid #d2d2d2"}
                   borderRadius={"10px"}

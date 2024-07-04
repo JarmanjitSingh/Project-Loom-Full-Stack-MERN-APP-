@@ -7,13 +7,14 @@ import {
   InputLeftElement,
   Text,
   VStack,
+  useToast,
 } from "@chakra-ui/react";
 import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { FormEvent, useState } from "react";
 import { CiMail } from "react-icons/ci";
 import { FcGoogle } from "react-icons/fc";
 import { useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Logo from "../../assets/images/Logo.png";
 import rightSvg from "../../assets/images/registerBanner.svg";
 import { RegisterUserLoginApi } from "../../reduxToolkit/api_functions/user";
@@ -26,7 +27,7 @@ const RegisterPage = () => {
   const [email, setEmail] = useState<string>("");
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const toast = useToast();
 
   const googleSignup = async () => {
     setButtonLoading(true);
@@ -42,7 +43,7 @@ const RegisterPage = () => {
         photoURL: user.photoURL as string,
       };
 
-      const data = await RegisterUserLoginApi(formData);
+      const data = await RegisterUserLoginApi(formData, toast);
       dispatch(userExist(data));
     } catch (error) {
       catchErrorFunction(error);
@@ -54,11 +55,11 @@ const RegisterPage = () => {
   const EmailSignup = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setButtonLoading(true);
-    const data = await RegisterUserLoginApi({ email });
+    const data = await RegisterUserLoginApi({ email }, toast);
     console.log("email signup data", data);
     setButtonLoading(false);
-    navigate("/register/account_settings1");
-    //dispatch(userExist(data));
+    // navigate("/register/account_settings1");
+    dispatch(userExist(data));
   };
 
   return (
