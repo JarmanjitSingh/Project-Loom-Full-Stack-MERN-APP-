@@ -51,8 +51,8 @@ const LoginPage = () => {
 
       const data = await LoginWithGoogleApi(formData);
 
-      if(data.success){
-        GetMyProfile(dispatch)
+      if (data.success) {
+        GetMyProfile(dispatch);
       }
     } catch (error) {
       catchErrorFunction(error);
@@ -69,7 +69,7 @@ const LoginPage = () => {
       password,
     };
     const data = await EmailPasswordLoginApi(formData, toast);
-    console.log('datafromemailpassword',data)
+    console.log("datafromemailpassword", data);
     setButtonLoading(false);
     dispatch(userExist(data));
   };
@@ -123,7 +123,7 @@ const LoginPage = () => {
                 />
               </InputGroup>
 
-              <InputGroup mb={4}>
+              <InputGroup mb={1}>
                 <InputLeftElement h={"full"} pointerEvents="none">
                   <IoKeyOutline
                     style={{ cursor: "pointer", color: "gray" }}
@@ -156,6 +156,10 @@ const LoginPage = () => {
                   )}
                 </InputRightElement>
               </InputGroup>
+
+              <Link to={"/forgetpassword"} style={{color: "#3182CE", fontSize: "0.875rem"}}>
+                Forget Password?
+              </Link>
 
               <Text
                 fontWeight={500}

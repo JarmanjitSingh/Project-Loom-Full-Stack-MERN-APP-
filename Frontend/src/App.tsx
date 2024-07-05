@@ -13,7 +13,7 @@ const DashboardPage = lazy(() => import("./pages/DashboardPage"));
 const RegStep1 = lazy(() => import("./pages/register/RegStep1"));
 const RegStep2 = lazy(() => import("./pages/register/RegStep2"));
 const TasklistPage = lazy(() => import("./pages/TasklistPage"));
-
+const ForgetPasswordPage = lazy(() => import("./pages/ForgetPasswordPage"));
 
 const App = () => {
   const { loading, user } = useSelector((state: RootState) => state.user);
@@ -89,6 +89,18 @@ const App = () => {
             element={
               <ProtectedRoute isAuthenticated={user ? true : false}>
                 <TasklistPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/forgetpassword"
+            element={
+              <ProtectedRoute
+                isAuthenticated={user ? false : true}
+                redirect="/dashboard"
+              >
+                <ForgetPasswordPage />
               </ProtectedRoute>
             }
           />

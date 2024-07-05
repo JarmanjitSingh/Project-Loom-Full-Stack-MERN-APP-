@@ -2,6 +2,7 @@ import express from "express";
 import {
   LoginWithGoogle,
   LoginWithPassword,
+  forgetPassword,
   getMyProfile,
   logoutUser,
   updateMyAccount,
@@ -23,6 +24,9 @@ router.route("/me").get(isAuthenticated, getMyProfile);
 router.route("/logout").get(isAuthenticated, logoutUser);
 
 router.route("/updateMyAccount").post(isAuthenticated, upload.single("file"), updateMyAccount);
+
+router.route("/forgetpassword").post(forgetPassword);
+
 
 
 export default router;

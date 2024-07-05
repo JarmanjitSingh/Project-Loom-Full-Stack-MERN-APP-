@@ -36,7 +36,7 @@ const TaskCard = ({
         <CardBody>
           <VStack>
             <HStack w={"full"} justifyContent={"space-between"}>
-              <HStack gap={4} border={"1px solid green"} w={"full"}>
+              <HStack gap={4} w={"full"}>
                 {" "}
                 <StatusIcon color={iconColor} size={iconSize} />{" "}
                 <Heading
@@ -44,13 +44,12 @@ const TaskCard = ({
                   overflow={"hidden"}
                   textOverflow={"ellipsis"}
                   whiteSpace={"nowrap"}
-                  border={"1px solid red"}
                   w={"full"}
                 >
                   {title}
                 </Heading>
               </HStack>
-              <HStack border={"1px solid blue"}>
+              <HStack>
                 <Box
                   border={"1px solid #d2d2d2"}
                   borderRadius={"10px"}

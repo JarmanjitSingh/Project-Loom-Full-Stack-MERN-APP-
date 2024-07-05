@@ -1,6 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/error.js";
+import { Group } from "../models/group.js";
+import { Invitations } from "../models/invitations.js";
 import { User } from "../models/user.js";
 import {
   AuthenticatedRequest,
@@ -9,9 +11,6 @@ import {
   PasswordLoginRequestBody,
 } from "../types/types.js";
 import { sendToken } from "../utils/sendToken.js";
-import { Invitations } from "../models/invitations.js";
-import { Group } from "../models/group.js";
-import fs from "fs";
 
 export const userRegister = catchAsyncErrors(
   async (
@@ -65,7 +64,7 @@ export const userRegister = catchAsyncErrors(
       if (!addMemberToGroup)
         return sendToken(res, user, "Invitation group not found", 201);
 
-      addMemberToGroup?.members.push({ member: user._id });
+      addMemberToGroup?.members.push({ member: user._id as string });
       await addMemberToGroup?.save();
     }
 
@@ -180,4 +179,29 @@ export const updateMyAccount = catchAsyncErrors(
   }
 );
 
+export const forgetPassword = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email } = req.body;
 
+    if (!email) return next(new ErrorHandler("Please provide email", 400));
+
+    const userExist = await User.findOne({ email });
+
+    if (!userExist) return next(new ErrorHandler("User not found", 400));
+
+    const resetToken = userExist.getResetToken();
+    await userExist.save();
+
+    //send token via email
+    const url = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+
+    const message = `Click on the link to reset your password. ${url}. If you have not requested then please ignore`;
+
+    // await sendEmail(user.email, "CodeBlu Reset Password", message);
+
+    res.status(200).json({
+      success: true,
+      message: "",
+    });
+  }
+);

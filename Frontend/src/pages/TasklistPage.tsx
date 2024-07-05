@@ -64,7 +64,7 @@ const TasklistPage = () => {
 
   useEffect(() => {
     GetProjectTasklists(id as string, dispatch);
-  }, [dispatch]);
+  }, [dispatch, id]);
 
   return (
     <>
