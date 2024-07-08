@@ -30,21 +30,23 @@ export interface AuthenticatedRequest extends Request {
   user?: any;
 }
 
-export type EmailTypeFunction = (
-  identifier: string,
-  to: string,
-  subject: string,
-  text?: string,
+interface EmailFunctionParams {
+  identifier: string;
+  to: string;
+  subject: string;
+  text?: string;
+  link?: string;
+  projectName?: string;
+  senderEmail?: string;
+  name?: string;
+}
+
+export type EmailTypeFunction = (params: EmailFunctionParams) => void;
+
+export type HtmlTemplateType = (
   link?: string,
   projectName?: string,
   senderEmail?: string,
-  name?: string
-) => void;
-
-export type HtmlTemplateType = (
-  link: string,
-  projectName: string,
-  senderEmail: string,
   name?: string,
   identifier?: string
 ) => string;

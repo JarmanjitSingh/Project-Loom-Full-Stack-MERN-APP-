@@ -52,27 +52,29 @@ export const inviteUsers = catchAsyncErrors(
           const combinedIds = `${invitation._id}-${data._id}-${existingUser._id}`;
           const token = Buffer.from(combinedIds).toString("base64");
 
-          sendEmail(
-            data.email,
-            `Project Loom group invitation`,
-            "You are invited to the group",
-            `${process.env.FRONTEND_URL}/invitation/accept/${token}`,
-            `${group.name}`,
-            `${group.owner.email}`
-          );
+          sendEmail({
+            identifier: "invitation",
+            to: data.email,
+            subject: `Project Loom group invitation`,
+            text: "You are invited to the group",
+            link: `${process.env.FRONTEND_URL}/invitation/accept/${token}`,
+            projectName: `${group.name}`,
+            senderEmail: `${group.owner.email}`,
+          });
         }
       } else {
         const combinedIds = `${invitation._id}-${data._id}`;
         const token = Buffer.from(combinedIds).toString("base64");
 
-        sendEmail(
-          data.email,
-          `Project Loom group invitation`,
-          "You are invited to the group",
-          `${process.env.FRONTEND_URL}/register/${token}`,
-          `${group.name}`,
-          `${group.owner.email}`
-        );
+        sendEmail({
+          identifier: "invitation",
+          to: data.email,
+          subject: `Project Loom group invitation`,
+          text: "You are invited to the group",
+          link: `${process.env.FRONTEND_URL}/register/${token}`,
+          projectName: `${group.name}`,
+          senderEmail: `${group.owner.email}`,
+        });
       }
     });
 
@@ -134,14 +136,16 @@ export const acceptInvitation = catchAsyncErrors(
   }
 );
 
+export const testing = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const a = Buffer.from(
+      `663fc46b589ead054217a3b6-66409140dab066b032f7c0e9`
+    ).toString("base64");
+    console.log(a);
 
-export const testing = catchAsyncErrors(async (req: Request, res: Response, next: NextFunction)=>{
-
-const a = Buffer.from(`663fc46b589ead054217a3b6-66409140dab066b032f7c0e9`).toString("base64")
-console.log(a)
-
-  res.status(200).json({
-    success: true,
-    message: "Hakunamatata"
-  })
-})
+    res.status(200).json({
+      success: true,
+      message: "Hakunamatata",
+    });
+  }
+);
