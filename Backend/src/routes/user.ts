@@ -5,6 +5,7 @@ import {
   forgetPassword,
   getMyProfile,
   logoutUser,
+  resetPassword,
   updateMyAccount,
   userRegister
 } from "../controllers/user.js";
@@ -26,6 +27,9 @@ router.route("/logout").get(isAuthenticated, logoutUser);
 router.route("/updateMyAccount").post(isAuthenticated, upload.single("file"), updateMyAccount);
 
 router.route("/forgetpassword").post(forgetPassword);
+
+router.route("/resetpassword/:token").put(resetPassword);
+
 
 
 

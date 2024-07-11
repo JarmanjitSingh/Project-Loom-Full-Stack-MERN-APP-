@@ -198,3 +198,39 @@ export const createTasklist = async (
     catchErrorFunction(error, null, toast);
   }
 };
+
+
+export const forgetPassword = async (
+  email: string,
+  toast: (options?: UseToastOptions | undefined) => ToastId,
+) => {
+  try {
+    const { data } = await axios.post(`${server}/user/forgetpassword`, {email}, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    return data;
+  } catch (error) {
+    catchErrorFunction(error, null, toast);
+  }
+};
+
+export const resetPassword = async (
+  password: string,
+  token: string,
+  toast: (options?: UseToastOptions | undefined) => ToastId,
+) => {
+  try {
+    const { data } = await axios.put(`${server}/user/resetpassword/${token}`, {password}, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      withCredentials: true,
+    });
+    return data;
+  } catch (error) {
+    catchErrorFunction(error, null, toast);
+  }
+};

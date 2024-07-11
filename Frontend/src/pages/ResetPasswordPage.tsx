@@ -1,61 +1,61 @@
 import {
-  Button,
-  Container,
-  FormControl,
-  FormLabel,
-  Heading,
-  Input,
-  useToast,
+    Button,
+    Container,
+    FormControl,
+    Heading,
+    Input,
+    useToast,
 } from "@chakra-ui/react";
 import { FormEvent, useState } from "react";
-import { forgetPassword } from "../reduxToolkit/api_functions/user";
+import { useParams } from "react-router-dom";
+import { resetPassword } from "../reduxToolkit/api_functions/user";
 import { showToast } from "../utils/toast";
 
-const ForgetPasswordPage = () => {
-  const [email, setEmail] = useState<string>("");
+const ResetPasswordPage = () => {
+  const [password, setPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const toast = useToast();
+
+  const { token } = useParams();
 
   const submitHandler = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
-    const data = await forgetPassword(email, toast);
+    const data = await resetPassword(password, token as string, toast);
 
     if (data) {
       showToast(toast, data.message);
-      setEmail("");
+      setPassword("");
     }
     setLoading(false);
   };
-
 
   return (
     <Container py={16} h={"90vh"}>
       <form onSubmit={submitHandler}>
         <Heading my={16} textTransform={"uppercase"} textAlign={"center"}>
-          Forget password
+          Reset password
         </Heading>
 
         <FormControl my={4}>
-          <FormLabel htmlFor="email">Email Address</FormLabel>
           <Input
-            type="email"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             required
-            placeholder="Enter your email"
+            placeholder="Enter your password"
           />
         </FormControl>
 
         <Button isLoading={loading} w={"full"} colorScheme="blue" type="submit">
-          Send Reset Link
+          Reset Password
         </Button>
       </form>
     </Container>
   );
 };
 
-export default ForgetPasswordPage;
+export default ResetPasswordPage;
