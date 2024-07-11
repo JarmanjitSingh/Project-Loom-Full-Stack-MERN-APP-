@@ -1,12 +1,13 @@
 import { createTransport } from "nodemailer";
 import { EmailTypeFunction, HtmlTemplateType } from "../types/types.js";
 
-const groupInvitationTemplate: HtmlTemplateType = (
+const groupInvitationTemplate: HtmlTemplateType = ({
+  identifier,
   link,
   projectName,
   senderEmail,
-  name
-) => {
+  name,
+}) => {
   return ` <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width:630px">
                 <tbody>
                    <tr>
@@ -57,13 +58,49 @@ const groupInvitationTemplate: HtmlTemplateType = (
              </table>`;
 };
 
-const htmlTemplate: HtmlTemplateType = (
+const forgetPasswordTemplate: HtmlTemplateType = ({ identifier, link }) => {
+  return ` <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width:630px">
+                 <tbody>
+                    <tr>
+                       <td bgcolor="#ffffff" style="border-top:2px solid #4990e2;border-bottom-left-radius:4px;border-bottom-right-radius:4px">
+                          <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+                             <tbody>
+                                <tr>
+                                   <td style="padding:24px;text-align:center;font-family:sans-serif;font-size:16px;line-height:24px;color:#333333">
+
+                                      <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:auto">
+                                         <tbody>
+                                            <tr>
+                                               <td style="border-radius:3px;background:#27ae60;text-align:center" class="m_7263922738444358665button-td">
+                                                  <a href=${link} style="background:#27ae60;border:1px solid #239c56;font-family:sans-serif;font-size:16px;line-height:48px;height:46px;text-align:center;text-decoration:none;display:block;border-radius:4px;padding-left:32px;padding-right:32px" class="m_7263922738444358665button-a" target="_blank">
+                                                  <span style="color:#ffffff" class="m_7263922738444358665button-link">Reset Password</span>
+                                                  </a>
+                                               </td>
+                                            </tr>
+                                         </tbody>
+                                      </table>
+                                      <p style="font-size:12px;padding:24px;margin:0">
+                                         <span style="color:#5c7899">or copy/paste the following link in your browser:</span><br>
+                                         <a href=${link} target="_blank">${link}</a>
+                                      </p>
+                                   </td>
+                                </tr>
+                             </tbody>
+                          </table>
+                       </td>
+                    </tr>
+                 </tbody>
+              </table>`;
+};
+
+const htmlTemplate: HtmlTemplateType = ({
+  identifier,
   link,
   projectName,
   senderEmail,
-  name
-): string => `
-<!DOCTYPE html>
+  name,
+}) =>
+  `<!DOCTYPE html>
 <html lang="en">
    <head>
       <meta charset="UTF-8">
@@ -82,23 +119,33 @@ const htmlTemplate: HtmlTemplateType = (
                   </tr>
                </tbody>
             </table>
-            ${groupInvitationTemplate(link, projectName, senderEmail, name)}
+            ${
+              identifier === "invitation"
+                ? groupInvitationTemplate({
+                    identifier,
+                    link,
+                    projectName,
+                    senderEmail,
+                    name,
+                  })
+                : forgetPasswordTemplate({ identifier, link })
+            }
            
          </div>
       </center>
    </body>
-</html>
-`;
+</html>`;
 
-export const sendEmail: EmailTypeFunction = async (
+export const sendEmail: EmailTypeFunction = async ({
+  identifier,
   to,
   subject,
   text,
   link,
   projectName,
   senderEmail,
-  name
-) => {
+  name,
+}) => {
   const transporter = createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
@@ -112,7 +159,7 @@ export const sendEmail: EmailTypeFunction = async (
     to,
     subject,
     text,
-    html: htmlTemplate(link, projectName, senderEmail, (name = "")),
+    html: htmlTemplate({ identifier, link, projectName, senderEmail, name }),
     from: '"via ProjectLoom 👻" <Jarmanjits176@gmail.com>',
   });
 };

@@ -70,7 +70,7 @@ schema.methods.getJWTToken = function () {
   });
 };
 
-schema.methods.getResetToken = async function () {
+schema.methods.getResetToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
 
   this.resetPasswordToken = crypto

@@ -31,7 +31,7 @@ export interface AuthenticatedRequest extends Request {
 }
 
 interface EmailFunctionParams {
-  identifier: string;
+  identifier: "invitation" | "resetPassword";
   to: string;
   subject: string;
   text?: string;
@@ -43,10 +43,11 @@ interface EmailFunctionParams {
 
 export type EmailTypeFunction = (params: EmailFunctionParams) => void;
 
+type HtmlTemplateTypeFunctionParams = Omit<
+  EmailFunctionParams,
+  "to" | "subject"
+>;
+
 export type HtmlTemplateType = (
-  link?: string,
-  projectName?: string,
-  senderEmail?: string,
-  name?: string,
-  identifier?: string
+  params: HtmlTemplateTypeFunctionParams
 ) => string;

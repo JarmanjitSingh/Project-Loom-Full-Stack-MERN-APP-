@@ -11,6 +11,7 @@ import {
   PasswordLoginRequestBody,
 } from "../types/types.js";
 import { sendToken } from "../utils/sendToken.js";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const userRegister = catchAsyncErrors(
   async (
@@ -195,13 +196,17 @@ export const forgetPassword = catchAsyncErrors(
     //send token via email
     const url = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
 
-    const message = `Click on the link to reset your password. ${url}. If you have not requested then please ignore`;
-
-    // await sendEmail(user.email, "CodeBlu Reset Password", message);
+   
+    sendEmail({
+      identifier: "resetPassword",
+      to: userExist.email,
+      subject: "ProjectLoom Password Reset",
+      link: url,
+    });
 
     res.status(200).json({
       success: true,
-      message: "",
+      message: "Reset link send to email address",
     });
   }
 );
