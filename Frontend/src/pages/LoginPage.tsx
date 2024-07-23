@@ -27,7 +27,6 @@ import {
 } from "../reduxToolkit/api_functions/user";
 import { userExist } from "../reduxToolkit/slices/userSlice";
 import { auth } from "../utils/firebase";
-import { catchErrorFunction } from "../utils/utils";
 
 const LoginPage = () => {
   const [show, setShow] = useState<boolean>(false);
@@ -38,9 +37,11 @@ const LoginPage = () => {
   const dispatch = useDispatch();
   const toast = useToast();
 
+  console.log("hellp")
+
   const googleLoginClick = async () => {
     setButtonLoading(true);
-    try {
+    
       const provider = new GoogleAuthProvider();
       const { user } = await signInWithPopup(auth, provider);
       if (!user) return;
@@ -49,16 +50,12 @@ const LoginPage = () => {
         googleUID: user.uid,
       };
 
-      const data = await LoginWithGoogleApi(formData);
+      const data = await LoginWithGoogleApi(formData, toast);
 
-      if (data.success) {
+      setButtonLoading(false); 
+      if (data?.success) {
         GetMyProfile(dispatch);
       }
-    } catch (error) {
-      catchErrorFunction(error);
-    } finally {
-      setButtonLoading(false);
-    }
   };
 
   const LoginThroughEmailPassword = async (e: FormEvent<HTMLFormElement>) => {
@@ -72,6 +69,9 @@ const LoginPage = () => {
     console.log("datafromemailpassword", data);
     setButtonLoading(false);
     dispatch(userExist(data));
+    if (data.success) {
+      GetMyProfile(dispatch);
+    }
   };
 
   return (

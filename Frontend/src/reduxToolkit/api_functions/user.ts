@@ -20,7 +20,10 @@ import { TasklistFormData } from "../../components/TasklistModal";
 
 const server = import.meta.env.VITE_SERVER;
 
-export const LoginWithGoogleApi = async (formData: LoginWithGoogleType) => {
+export const LoginWithGoogleApi = async (
+  formData: LoginWithGoogleType,
+  toast: (options?: UseToastOptions | undefined) => ToastId
+) => {
   try {
     const { data } = await axios.post(`${server}/user/login/google`, formData, {
       headers: {
@@ -31,7 +34,7 @@ export const LoginWithGoogleApi = async (formData: LoginWithGoogleType) => {
 
     return data;
   } catch (error) {
-    catchErrorFunction(error);
+    catchErrorFunction(error, null, toast);
   }
 };
 
@@ -181,10 +184,9 @@ export const createTask = async (
   }
 };
 
-
 export const createTasklist = async (
   formData: TasklistFormData,
-  toast: (options?: UseToastOptions | undefined) => ToastId,
+  toast: (options?: UseToastOptions | undefined) => ToastId
 ) => {
   try {
     const { data } = await axios.post(`${server}/tasklist/create`, formData, {
@@ -199,18 +201,21 @@ export const createTasklist = async (
   }
 };
 
-
 export const forgetPassword = async (
   email: string,
-  toast: (options?: UseToastOptions | undefined) => ToastId,
+  toast: (options?: UseToastOptions | undefined) => ToastId
 ) => {
   try {
-    const { data } = await axios.post(`${server}/user/forgetpassword`, {email}, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true,
-    });
+    const { data } = await axios.post(
+      `${server}/user/forgetpassword`,
+      { email },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return data;
   } catch (error) {
     catchErrorFunction(error, null, toast);
@@ -220,15 +225,19 @@ export const forgetPassword = async (
 export const resetPassword = async (
   password: string,
   token: string,
-  toast: (options?: UseToastOptions | undefined) => ToastId,
+  toast: (options?: UseToastOptions | undefined) => ToastId
 ) => {
   try {
-    const { data } = await axios.put(`${server}/user/resetpassword/${token}`, {password}, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      withCredentials: true,
-    });
+    const { data } = await axios.put(
+      `${server}/user/resetpassword/${token}`,
+      { password },
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        withCredentials: true,
+      }
+    );
     return data;
   } catch (error) {
     catchErrorFunction(error, null, toast);

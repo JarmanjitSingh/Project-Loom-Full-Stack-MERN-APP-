@@ -23,5 +23,6 @@ export const catchErrorFunction: CatchAsyncErrorsType = (
     }
   } else {
     console.error("Non-Axios Error:", error);
+
   }
 };
