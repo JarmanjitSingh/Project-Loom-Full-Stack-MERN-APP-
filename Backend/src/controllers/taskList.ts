@@ -49,8 +49,9 @@ export const getAllTasklist = catchAsyncErrors(
     if (!projectExist)
       return next(new ErrorHandler("Project is not exist", 400));
 
-    const groupMembers = await Group.findById(projectExist.group).populate("members.member");
-
+    const groupMembers = await Group.findById(projectExist.group).populate(
+      "members.member"
+    );
 
     // This will return the empty tasklist also
     // const tasklist = await Tasklist.aggregate([
@@ -83,7 +84,7 @@ export const getAllTasklist = catchAsyncErrors(
         $unwind: {
           path: "$tasks",
           preserveNullAndEmptyArrays: true, // This will keep tasklist documents even if there are no tasks
-        }
+        },
       },
       {
         $group: {
@@ -132,8 +133,8 @@ export const getAllTasklist = catchAsyncErrors(
         },
       },
       {
-        $sort: { _id: 1 } 
-      }
+        $sort: { _id: 1 },
+      },
     ]);
 
     if (!tasklist) return next(new ErrorHandler("Something went wrong", 500));
@@ -141,7 +142,27 @@ export const getAllTasklist = catchAsyncErrors(
     res.status(200).json({
       success: true,
       tasklist,
-      groupMembers: groupMembers?.members
+      groupMembers: groupMembers?.members,
     });
+  }
+);
+
+export const editTasklist = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id, title, description } = req.body;
+
+    if (!id) return next(new ErrorHandler("Tasklist id is not found", 400));
+
+    const tasklist = await Tasklist.findByIdAndUpdate(id, {
+      title,
+      description,
+    });
+
+    if(!tasklist) return next(new ErrorHandler("Tasklist is not found", 400));
+
+    res.status(201).json({
+      success: true,
+      message: "Task list updated."
+    })
   }
 );
