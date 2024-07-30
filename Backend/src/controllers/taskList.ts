@@ -158,7 +158,7 @@ export const editTasklist = catchAsyncErrors(
       description,
     });
 
-    if(!tasklist) return next(new ErrorHandler("Tasklist is not found", 400));
+    if(!tasklist) return next(new ErrorHandler("Tasklist is not found", 404));
 
     res.status(201).json({
       success: true,
@@ -166,3 +166,23 @@ export const editTasklist = catchAsyncErrors(
     })
   }
 );
+
+export const deleteTasklist = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.body;
+
+    if (!id) return next(new ErrorHandler("Tasklist id is not found", 400));
+
+    const tasklist = await Tasklist.findById(id);
+
+    if(!tasklist) return next(new ErrorHandler("Tasklist is not found", 404));
+
+    await Tasks.deleteMany({tasklistId: id});
+    await tasklist.deleteOne();
+
+    res.status(200).json({
+      success: true,
+      message: "Task list deleted."
+    })
+  }
+);  
