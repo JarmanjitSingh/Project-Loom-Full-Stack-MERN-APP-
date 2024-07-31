@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import catchAsyncErrors from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/error.js";
 import { Tasks } from "../models/tasks.js";
+import { Tasklist } from "../models/taskList.js";
 
 export const createTask = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -19,6 +20,10 @@ export const createTask = catchAsyncErrors(
     if (!tasklistId || !title)
       return next(new ErrorHandler("Please fill all required fields", 400));
 
+    const tasklist = await Tasklist.findById(tasklistId);
+
+    if (!tasklist) return next(new ErrorHandler("Tasklist is not found", 404));
+
     const task = await Tasks.create({
       tasklistId,
       title,
@@ -28,7 +33,8 @@ export const createTask = catchAsyncErrors(
       startDate,
       dueDate,
       priority,
-    })
+      group: tasklist.group,
+    });
 
     res.status(201).json({
       success: true,
@@ -45,14 +51,14 @@ export const deleteTask = catchAsyncErrors(
 
     const task = await Tasks.findByIdAndDelete(id);
 
-    if(!task) return next(new ErrorHandler("Task is not found", 404));
+    if (!task) return next(new ErrorHandler("Task is not found", 404));
 
     res.status(200).json({
       success: true,
-      message: "Task deleted."
-    })
+      message: "Task deleted.",
+    });
   }
-);  
+);
 
 export const editTask = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -79,11 +85,11 @@ export const editTask = catchAsyncErrors(
       priority,
     });
 
-    if(!task) return next(new ErrorHandler("Task is not found", 404));
+    if (!task) return next(new ErrorHandler("Task is not found", 404));
 
     res.status(200).json({
       success: true,
-      message: "Task updated."
-    })
+      message: "Task updated.",
+    });
   }
-);  
+);

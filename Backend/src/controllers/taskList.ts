@@ -23,6 +23,7 @@ export const createTaskList = catchAsyncErrors(
       title,
       description,
       projectId,
+      group: projectExist.group
     });
 
     if (!newTaskList)

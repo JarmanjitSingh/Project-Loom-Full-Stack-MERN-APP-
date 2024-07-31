@@ -11,6 +11,7 @@ export interface TaskType extends Document {
   startDate?: Date;
   dueDate?: Date;
   priority: "none" | "low" | "medium" | "high";
+  group: ObjectId;
 }
 
 const schema = new Schema<TaskType>(
@@ -54,6 +55,11 @@ const schema = new Schema<TaskType>(
       type: String,
       enum: ["none", "low", "medium", "high"],
       default: "none",
+    },
+    group: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Group",
+      required: true,
     },
   },
   { timestamps: true }

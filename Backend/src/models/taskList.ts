@@ -5,6 +5,8 @@ export interface TasklistType extends Document {
   title: string;
   description?: string;
   projectId: ProjectType | ObjectId;
+  group: ObjectId;
+
 }
 
 const schema = new Schema<TasklistType>(
@@ -18,6 +20,11 @@ const schema = new Schema<TasklistType>(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Project",
       required: [true, "Project is required"],
+    },
+    group: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Group",
+      required: true,
     },
   },
   {
