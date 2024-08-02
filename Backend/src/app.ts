@@ -9,8 +9,15 @@ import userRoute from "./routes/user.js";
 import invitationRoute from "./routes/invitations.js";
 import tasklistRoute from "./routes/taskList.js";
 import taskRoute from "./routes/tasks.js";
+import { dirname } from 'path';
+import { fileURLToPath } from "url";
 
-config();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+config({
+   path: `${__dirname}/../.env` 
+});
 const app = express();
 
 //using middlewares

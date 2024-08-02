@@ -14,13 +14,24 @@ export const createProject = catchAsyncErrors(
     next: NextFunction
   ) => {
     const { name, description, color, group } = req.body;
-
+    const userId = req.user._id
+ 
     if (!name || !group || !req.user._id)
       return next(new ErrorHandler("Please fill required fields", 400));
 
     const groupExist = await Group.findById(group);
 
     if (!groupExist) return next(new ErrorHandler("Group is not found", 404));
+
+
+    console.log("hello");
+    console.log("hello");
+
+    
+    const owner = groupExist.owner.toString() === userId.toString();
+    const member = groupExist.members.some(member => member.toString() === userId.toString());
+
+    if(!owner && !member) return next(new ErrorHandler("You are not authorized to make changes", 403))
 
     const project = await Project.create({
       name,
